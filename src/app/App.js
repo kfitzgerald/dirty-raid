@@ -98,7 +98,7 @@ function App() {
                         Login with Twitch
                     </a>
                 </p>
-                <footer><a href="#">Setup an OBS Dock</a> • <a href="https://github.com/kfitzgerald/dirty-raid" target="_blank" rel="noreferrer">Open Source</a> app made by <a href="https://www.twitch.tv/dirtybriefs" target="_blank" rel="noreferrer">Dirtybriefs</a>.</footer>
+                <footer><a href="https://github.com/kfitzgerald/dirty-raid#add-to-obs" target="_blank" rel="noreferrer">Setup an OBS Dock</a> • <a href="https://github.com/kfitzgerald/dirty-raid" target="_blank" rel="noreferrer">Open Source</a> app made by <a href="https://www.twitch.tv/dirtybriefs" target="_blank" rel="noreferrer">Dirtybriefs</a>.</footer>
             </div>
         </div>
     );
