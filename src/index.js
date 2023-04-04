@@ -1,13 +1,29 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
+import './index.scss';
+import App from './app/App';
 import reportWebVitals from './reportWebVitals';
+import configureStore from './configureStore';
+import { Provider } from "react-redux";
+import * as Sentry from "@sentry/react";
+
+// Report errors in production only
+if (process.env.NODE_ENV && process.env.NODE_ENV !== 'development') {
+    Sentry.init({
+        dsn: process.env.REACT_APP_SENTRY_DSN,
+    });
+}
+
+// Setup Redux
+const preloadedState = undefined;
+const store = configureStore(preloadedState);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+      <Provider store={store}>
+          <App />
+      </Provider>
   </React.StrictMode>
 );
 

@@ -1,4 +1,49 @@
-# Getting Started with Create React App
+# Dirty Raid Target Finder
+
+Twitch raid target finder. Usable as an OBS browser dock to make finding a raid target
+quick and painless. Raid out right from the app, never typo someone's channel name again! 
+Works great from a phone or tablet too! 
+
+Features:
+- **Client-side app** – Your personal data is never stored or transmitted anywhere but your own computer. Privacy™
+- **OBS Dock** – Add this app as a custom browser dock to have a seamless stream experience.
+- **No Typos** – Never worry about a channel name typo again, just click the big red button to raid!
+- **Real Time** – The app refreshes automatically (every 15s) so you'll always have the latest status.
+- **Sorting** – Sort your followed channels by name, viewer count, uptime and more! 
+
+> Coming soon: [RaidPal](https://raidpal.com) integration! Flawlessly raid out on RaidPal events. 
+
+## Screenshots
+
+By default, stream title and tags are visible:
+![](docs/screenshot-list-full.png)
+
+Optionally, turn off the info to get a condensed list:
+![](docs/screenshot-list-min.png)
+
+Select a channel to see the stream info and push the big red button to start the raid!
+![](docs/screenshot-stream.png)
+
+After starting the raid, you can cancel for up to 90 seconds or until the raid is executed from the Twitch UX.
+![](docs/screenshot-cancel.png)
+
+> Note: The Twitch API limits you to no more than 10 raids in a 10-minute window. Be decisive with your raids!
+
+## Add to OBS
+![](docs/obs-docks.gif)
+
+Add the app as a custom dock to OBS:
+- From the menu, select `Docks` > `Custom Browser Docks...`
+- Enter a name for the dock (e.g. `DirtyRaid`) and the url: `https://raid.dirtybriefs.net`
+- Click `Apply` - the Dock should now appear, likely behind the Custom Browser Docks dialog.
+- Move the dock to where ever you'd like, docking it to OBS or keep it detached for a separate monitor.
+
+# Contributing
+
+Have some ideas, feedback, or want to add some features? Hit me up on Discord, open an issue, or fire a PR this way!
+
+
+# Toolchain
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
