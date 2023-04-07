@@ -72,15 +72,15 @@ a {
     padding: 0;
 
     .btn {
-      background-color: #9146ff;
-      border-color: #9146ff;
+      background-color: #9147ff;
+      border-color: #9147ff;
       margin: 0;
       font-size: 1.5em;
       padding: 0.02rem 0.5rem;
 
       &:hover {
-        background-color: lighten(#9146ff, 10%);
-        border-color: lighten(#9146ff, 10%);
+        background-color: lighten(#9147ff, 10%);
+        border-color: lighten(#9147ff, 10%);
       }
     }
   }
@@ -98,7 +98,8 @@ a {
   .btn {
     padding: 0.25em 0.5em;
     font-size: 0.9em;
-    color: #ff98cb;
+    font-weight: 500;
+    color: #bf94ff;
     text-decoration: none;
   }
 }
@@ -107,6 +108,11 @@ a {
   img {
     height: 2em;
   }
+}
+
+.partner {
+  margin-right: 0.25em;
+  color: #bf94ff;
 }
 
 .stream-list {
@@ -120,6 +126,26 @@ a {
 
     &:hover {
       background-color: darken(#282c34, 15%);
+    }
+
+    .info-container {
+      display: flex;
+      align-items: center;
+      min-height: 3em;
+
+      .profile-container {
+        padding-right: 0.5em;
+        align-self: baseline;
+
+        img {
+          height: auto;
+          width: 3em;
+        }
+      }
+
+      .stream-info {
+        flex-grow: 1;
+      }
     }
 
     .viewers {
@@ -163,6 +189,8 @@ a {
         white-space: nowrap;
         text-overflow: ellipsis;
         width: 100%;
+        //position: absolute;
+        //z-index: 0;
       }
     }
 

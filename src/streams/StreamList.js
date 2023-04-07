@@ -10,6 +10,8 @@ import {TimeDuration} from "./TimeDuration";
 import {SORT_BY, SORT_DIRECTION, SortableField} from "./SortableField";
 import {revokeToken} from "../session/SessionActions";
 import Moment from "moment";
+import profileImage from '../profile.svg';
+import {setPreference} from "../app/AppActions";
 
 /**
  * Stream list view (the main screen of the app)
@@ -22,13 +24,16 @@ function StreamList() {
     // todo - consider persisting local preference state to the app state
     const [sortBy, setSortBy] = useState(SORT_BY.VIEWER_COUNT); // default api sort
     const [sortDir, setSortDir] = useState(SORT_DIRECTION.DESC);
-    const [showTitles, setShowTitles] = useState(true);
-    const [showTags, setShowTags] = useState(true);
+    const { showTitles, showTags, showProfileImg } = useSelector(state => state.app.preferences);
+    // const [showTitles, setShowTitles] = useState(true);
+    // const [showTags, setShowTags] = useState(true);
+    // const [showProfileImg, setShowProfileImg] = useState(true);
     const [selectedStreamId, setSelectedStream] = useState(null);
     const [showModal, setShowModal] = useState(null);
 
     const streams = useSelector(state => state.streams);
-    const login = useSelector(state => state.session.data.login);
+    const { user_id, login } = useSelector(state => state.session.data);
+    const userCache = useSelector(state => state.users.cache);
 
     const { isFetching, lastError, data, raid, lastUpdated } = streams;
     const { isFetching: isRaidFetching, /*isCancelled, lastError: raidLastError,*/ lastUpdated: raidStartedAt } = raid;
@@ -62,12 +67,16 @@ function StreamList() {
     }, [setSortBy, setSortDir]);
 
     const handleToggleTitle = useCallback((e) => {
-        setShowTitles(e.target.checked);
-    }, [setShowTitles]);
+        dispatch(setPreference('showTitles', e.target.checked));
+    }, [dispatch]);
 
     const handleToggleTags = useCallback((e) => {
-        setShowTags(e.target.checked);
-    }, [setShowTags]);
+        dispatch(setPreference('showTags', e.target.checked));
+    }, [dispatch]);
+
+    const handleToggleProfileImg = useCallback((e) => {
+        dispatch(setPreference('showProfileImg', e.target.checked));
+    }, [dispatch]);
 
     const handleRefresh = useCallback(() => {
         dispatch(fetchFollowedStreams());
@@ -143,7 +152,7 @@ function StreamList() {
                     <Navbar.Brand>DirtyRaid™</Navbar.Brand>
                     <Navbar.Toggle />
                     <Navbar.Collapse className="justify-content-end">
-                        <NavDropdown title={<><img src={twitchLogo} alt="" /> {login}</>} id="user-dropdown" align="end">
+                        <NavDropdown title={<><img src={twitchLogo} alt="" /> {userCache[user_id]?.display_name || login}</>} id="user-dropdown" align="end">
                             <NavDropdown.Item onClick={handleSignOut}>Sign out</NavDropdown.Item>
                         </NavDropdown>
                         <Navbar.Text>
@@ -162,10 +171,13 @@ function StreamList() {
                 <label>Display Options:</label>
                 <div>
                     <div>
-                        <Form.Check type="switch" id="show-title" label="Show titles" checked={showTitles} onChange={handleToggleTitle} />
+                        <Form.Check type="switch" id="show-title" label="Titles" checked={showTitles} onChange={handleToggleTitle} />
                     </div>
                     <div>
-                        <Form.Check type="switch" id="show-tags" label="Show tags" checked={showTags} onChange={handleToggleTags} />
+                        <Form.Check type="switch" id="show-tags" label="Tags" checked={showTags} onChange={handleToggleTags} />
+                    </div>
+                    <div>
+                        <Form.Check type="switch" id="show-tags" label="Pic" checked={showProfileImg} onChange={handleToggleProfileImg} />
                     </div>
                     <div className="refresh text-end flex-grow-1">
                         <Button disabled={isFetching} onClick={handleRefresh}><i className="bi bi-arrow-clockwise"/></Button>
@@ -184,26 +196,36 @@ function StreamList() {
             <div className="stream-list">
                 {
                     streamList.map((stream, i) => {
+                        const profile = userCache[stream.user_id];
                         return (
                             <div className="stream" key={i} data-id={stream.id} onClick={handleStreamClick}>
-
-                                <Row className="whodis">
-                                    <Col>
-                                        <div className="d-flex justify-content-between">
-                                            <div className="flex-grow-1 user-name"><span>{stream.user_name}</span></div>
-                                            <div className="flex-grow-0 participation">
-                                                <span className="viewers"><i className="bi bi-eye-fill"/> {
-                                                    CondensedFormatter(stream.viewer_count, 0)}</span>
-                                                <TimeDuration time={stream.started_at} />
-                                            </div>
+                                <div className="info-container">
+                                    {showProfileImg && (
+                                        <div className="profile-container">
+                                            <img src={profile?.profile_image_url || profileImage} alt="" />
                                         </div>
-                                    </Col>
-                                </Row>
-                                {showTitles && (
-                                    <Row>
-                                        <Col className="title">{stream.title}</Col>
-                                    </Row>
-                                )}
+                                    )}
+                                    <div className="stream-info">
+                                        <Row className="whodis">
+                                            <Col>
+                                                <div className="d-flex justify-content-between">
+                                                    <div className="flex-grow-1 user-name"><span>{profile && profile.broadcaster_type === 'partner' &&
+                                                        <i className="bi bi-patch-check-fill partner"/>}{stream.user_name}</span></div>
+                                                    <div className="flex-grow-0 participation">
+                                                        <span className="viewers"><i className="bi bi-eye-fill"/> {
+                                                            CondensedFormatter(stream.viewer_count, 0)}</span>
+                                                        <TimeDuration time={stream.started_at} />
+                                                    </div>
+                                                </div>
+                                            </Col>
+                                        </Row>
+                                        {showTitles && (
+                                            <Row>
+                                                <Col className="title">{stream.title}</Col>
+                                            </Row>
+                                        )}
+                                    </div>
+                                </div>
                                 {showTags && (
                                     <Row>
                                         <Col className="tags">
@@ -225,16 +247,19 @@ function StreamList() {
                 <Modal show={showModal} onHide={handleCloseModal} size="lg" centered className="stream-modal">
                     <Modal.Header closeButton>
                         <Modal.Title id="stuffs">
+                            {userCache[selectedStream?.user_id] && userCache[selectedStream?.user_id].broadcaster_type === 'partner' &&
+                                <i className="bi bi-patch-check-fill partner"/>}
                             {selectedStream?.user_name || 'Streamer Offline!'}
                         </Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                         {selectedStream ? (
-                            <><Row>
-                                <Col>
-                                    <img src={selectedStream.thumbnail_url.replace(/{width}x{height}/, '400x225')+'?nonce='+lastUpdated} alt="" />
-                                </Col>
-                            </Row>
+                            <>
+                                <Row>
+                                    <Col>
+                                        <img src={selectedStream.thumbnail_url.replace(/{width}x{height}/, '400x225')+'?nonce='+lastUpdated} alt="" />
+                                    </Col>
+                                </Row>
                                 <Row>
                                     <Col className="title">{selectedStream.title}</Col>
                                 </Row>

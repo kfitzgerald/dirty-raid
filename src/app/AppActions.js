@@ -8,3 +8,13 @@ export function crashApp(error, errorInfo) {
         errorInfo
     };
 }
+
+export const SET_PREFERENCE = 'SET_PREFERENCE';
+export function setPreference(key, value) {
+    return {
+        type: SET_PREFERENCE,
+        key,
+        value
+    };
+}
+

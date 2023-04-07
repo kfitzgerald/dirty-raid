@@ -1,5 +1,6 @@
 import {apiDelete, apiGet, apiPost} from "../common/API";
 import {revokeToken} from "../session/SessionActions";
+import {fetchUsers} from "../users/UserActions";
 
 //region Twitch Followed Streams
 
@@ -83,6 +84,7 @@ export function fetchFollowedStreams(callback=() => {}) {
         }
 
         // success
+        dispatch(fetchUsers(streamList.map(s => s.user_id))); // fetch user info
         dispatch(requestFollowedStreamsSuccess(streamList));
         callback(null, streamList);
 

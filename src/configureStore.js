@@ -4,6 +4,8 @@ import Thunk from 'redux-thunk';
 
 import rootReducer from './reducers';
 import {initialSessionState} from "./session/SessionReducer";
+import {initialState as initialAppState} from './app/AppReducer';
+import {initialState as initialUserState} from './users/UserReducer';
 
 let composer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
@@ -13,7 +15,21 @@ let enhancers = composer(
         slicer: (/*paths*/) => {
             return (state) => {
                 return {
-                    session: state.session,
+                    app: {
+                        preferences: {
+                            ...state.app.preferences,
+                        }
+                    },
+                    session: {
+                        token: {
+                            ...state.session.token || {},
+                        }
+                    },
+                    users: {
+                        cache: {
+                            ...state.users.cache,
+                        }
+                    }
                 };
             };
         },
@@ -22,12 +38,28 @@ let enhancers = composer(
             // TODO: add a check for app version, and only merge if versions match
             return {
                 ...initialState, // ignore stored fetching/error states
+
+                app: {
+                    ...initialAppState,
+                    preferences: {
+                        ...initialAppState.preferences,
+                        ...persistedState.app.preferences
+                    }
+                },
+
                 session: {
                     ...initialSessionState,                 // default session state
                     token: {
                         ...persistedState.session.token,    // only persist the token, validation will be done on load
                     }
+                },
 
+                users: {
+                    ...initialUserState,
+                    cache: {
+                        ...initialUserState.cache,
+                        ...persistedState.users.cache
+                    }
                 }
             };
         }
