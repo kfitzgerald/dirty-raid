@@ -301,6 +301,8 @@ function StreamList() {
 
                     </Modal.Body>
                     <Modal.Footer>
+                        <Button className="viewStream" variant="secondary" href={"https://twitch.tv/"+selectedStream?.user_login} disabled={!selectedStream} target="_blank" rel="noreferrer">View Stream <i className="bi bi-box-arrow-up-right"/></Button>
+                        <div className="flex-grow-1" />
                         {selectedStream && (
                             isRaiding ? (
                                 <Button disabled={isRaidFetching} variant="warning" onClick={handleRaidStop}>Cancel Raid</Button>
