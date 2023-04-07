@@ -50,6 +50,19 @@ a {
     font-size: 0.85em;
   }
 
+  & > div.opt-labels {
+    padding: 0;
+    justify-content: space-between;
+
+    code {
+      color: white;
+      width: 1.25em;
+      display: inline-block;
+      text-align: right;
+      white-space: nowrap;
+    }
+  }
+
   & > div {
     display: flex;
     padding: 0 0.5em;
@@ -107,6 +120,7 @@ a {
 .navbar {
   img {
     height: 2em;
+    margin-right: 0.5em;
   }
 }
 
@@ -145,7 +159,13 @@ a {
 
       .stream-info {
         flex-grow: 1;
+        max-width: 100%;
+        overflow: hidden;
       }
+    }
+
+    .whodis .d-flex {
+      min-width: 0;
     }
 
     .viewers {
@@ -183,15 +203,10 @@ a {
     .user-name {
       font-weight: 500;
       font-size: max(0.85em, min(1em, 4vw));
-
-      span {
-        display: inline-block;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        width: 100%;
-        //position: absolute;
-        //z-index: 0;
-      }
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      width: 100%;
+      overflow: hidden;
     }
 
     .title {

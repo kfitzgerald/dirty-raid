@@ -12,9 +12,12 @@ import {revokeToken} from "../session/SessionActions";
 import Moment from "moment";
 import profileImage from '../profile.svg';
 import {setPreference} from "../app/AppActions";
+import {Countdown} from "./Countdown";
+
+const REFRESH_INTERVAL = 15000;
 
 /**
- * Stream list view (the main screen of the app)
+ *  Stream list view (the main screen of the app)
  * @return {JSX.Element}
  * @constructor
  */
@@ -53,7 +56,7 @@ function StreamList() {
         // Refresh every 15s
         const refreshInterval = setInterval(() => {
             dispatch(fetchFollowedStreams());
-        }, 15000);
+        }, REFRESH_INTERVAL);
 
         // Cleanup
         return () => {
@@ -152,7 +155,7 @@ function StreamList() {
                     <Navbar.Brand>DirtyRaid™</Navbar.Brand>
                     <Navbar.Toggle />
                     <Navbar.Collapse className="justify-content-end">
-                        <NavDropdown title={<><img src={twitchLogo} alt="" /> {userCache[user_id]?.display_name || login}</>} id="user-dropdown" align="end">
+                        <NavDropdown title={<><img src={userCache[user_id]?.profile_image_url || twitchLogo} alt="" /> {userCache[user_id]?.display_name || login}</>} id="user-dropdown" align="end">
                             <NavDropdown.Item onClick={handleSignOut}>Sign out</NavDropdown.Item>
                         </NavDropdown>
                         <Navbar.Text>
@@ -168,7 +171,10 @@ function StreamList() {
                 </Alert>
             )}
             <div className="display-opts">
-                <label>Display Options:</label>
+                <div className="opt-labels">
+                    <label>Display Options:</label>
+                    <label>Refreshes in <code><Countdown to={(lastUpdated||Date.now()) + REFRESH_INTERVAL} /></code>...</label>
+                </div>
                 <div>
                     <div>
                         <Form.Check type="switch" id="show-title" label="Titles" checked={showTitles} onChange={handleToggleTitle} />
