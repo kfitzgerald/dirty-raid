@@ -117,10 +117,43 @@ a {
   }
 }
 
+
+.alert a {
+  color: #9147ff;
+}
+
 .navbar {
+  padding-top: 0;
+  padding-bottom: 0;
+
   img {
     height: 2em;
     margin-right: 0.5em;
+  }
+
+  .nav-link {
+    padding-top: 8px;
+    padding-bottom: 8px;
+
+    &.active {
+      border-bottom: 3px solid white;
+    }
+    //padding: var(--bs-nav-link-padding-y)) calc(2*var(--bs-nav-link-padding-x));
+  }
+
+  .navbar-collapse {
+    min-width: 0;
+    max-width: 100%;
+
+    .nav-item.dropdown {
+      min-width: 0;
+      max-width: 100%;
+
+      a {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
   }
 }
 
@@ -279,6 +312,15 @@ a {
       font-size: 1rem;
       color: white;
       margin-right: 1px;
+    }
+  }
+
+  .channel-about {
+    label {
+      font-weight: 500;
+    }
+    div {
+      font-size: .9em;
     }
   }
 

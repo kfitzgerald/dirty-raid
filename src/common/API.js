@@ -44,7 +44,7 @@ export function doApiCall(method, path, { payload, query, oauth, bearer, clientI
 
     // Build a fetch request using the given params and options
     const headers = new Headers({
-        'Accept': 'application/json'    // we always want JSON
+        'Accept': 'application/json,text/javascript'    // we always want JSON
     });
 
     const fetchArgs = {
@@ -90,7 +90,7 @@ export function doApiCall(method, path, { payload, query, oauth, bearer, clientI
             .then(res => {
                 // Some API calls do not return JSON or a body at all - only JSON-decode when necessary
                 const contentType = res.headers.get("Content-Type") || '';
-                if (contentType.includes('json')) {
+                if (contentType.includes('json') || contentType.includes('javascript')) {
                     return res.json();
                 } else {
                     // no content - mock a response

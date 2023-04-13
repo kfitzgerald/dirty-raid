@@ -6,12 +6,13 @@ import './Loading.scss';
  * @return {JSX.Element}
  * @constructor
  */
-function Loading() {
+function Loading({ children }) {
     return (
         <div className="Loading">
             <header className="Loading-header">
                 <img src={logo} className="Loading-logo" alt="logo" />
             </header>
+            {children}
         </div>
     );
 }

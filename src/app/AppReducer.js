@@ -6,7 +6,8 @@ export const initialState = {
     preferences: {
         showTitles: true,
         showTags: true,
-        showProfileImg: true
+        showProfileImg: true,
+        showAmPm: true
     }
 };
 

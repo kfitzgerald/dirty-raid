@@ -1,0 +1,141 @@
+.event-list {
+  .dropdown {
+    width: 100%;
+  }
+
+  .static {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+
+  .dropdown > a {
+    background-color: #402765;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+
+    span {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      flex-grow: 1;
+    }
+  }
+
+  .dropdown-menu {
+    width: 100%;
+
+    a {
+      display: flex;
+    }
+  }
+
+  a {
+    //display: flex;
+    width: 100%;
+    color: white;
+    border-radius: 0.5em;
+
+    &:focus,
+    &.active {
+      color: white;
+      background-color: #402765;
+    }
+
+    &:hover {
+      color: white;
+      background-color: lighten(#402765, 15%);
+    }
+
+    .title {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      flex-grow: 1;
+    }
+
+    .badge {
+      flex-shrink: 0;
+      white-space: nowrap;
+      margin-right: 0;
+    }
+  }
+}
+
+.event {
+  h2 {
+    padding: 0 0.25em;
+  }
+
+  .description {
+    padding: 0 0.25em;
+    font-size: .9rem;
+    color: #e8e8e8;
+  }
+
+  .lineup {
+    border-top: solid 1px #4b4d55;
+    margin-top: 1em;
+  }
+
+  .slot {
+    display: flex;
+    align-items: center;
+    border-bottom: solid 1px #4b4d55;
+    padding: 0.5em 0;
+    cursor: pointer;
+    width: 100%;
+
+    &:hover {
+      background-color: darken(#282c34, 15%);
+    }
+
+    &.current {
+      background-color: #402765;
+    }
+
+    .profile-container {
+      width: 3em;
+      margin-right: 0.5em;
+
+      img {
+        width: 3em;
+        height: auto;
+      }
+    }
+
+    .stream-info {
+      white-space: nowrap;
+      overflow: hidden;
+      width: 100%;
+      text-overflow: ellipsis;
+      flex-grow: 1;
+
+      .user-name {
+        font-weight: 500;
+        font-size: max(0.85em, min(1em, 4vw));
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        width: 100%;
+        overflow: hidden;
+      }
+
+      .timing {
+        font-size: .9rem;
+        color: #e8e8e8;
+      }
+    }
+
+    .stream-status {
+      flex-shrink: 0;
+      white-space: nowrap;
+      align-self: normal;
+      margin-left: 0.5em;
+    }
+
+
+
+  }
+}

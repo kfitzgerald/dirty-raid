@@ -1,20 +1,21 @@
 import Loading from "../common/Loading";
 import {useDispatch, useSelector} from "react-redux";
 import {useCallback, useEffect, useState} from "react";
-import {fetchFollowedStreams, fetchRaidStart, fetchRaidStop} from "./StreamActions";
-import {Alert, Badge, Button, Col, Container, Form, Modal, Navbar, NavDropdown, Row} from "react-bootstrap";
+import {fetchFollowedStreams} from "./StreamActions";
+import {Alert, Badge, Button, Col, Container, Form, Nav, Navbar, NavDropdown, Row, Tab} from "react-bootstrap";
 import './StreamList.scss';
 import {CondensedFormatter} from "../common/PrettyNumber";
 import twitchLogo from '../TwitchGlitchPurple.svg';
 import {TimeDuration} from "./TimeDuration";
 import {SORT_BY, SORT_DIRECTION, SortableField} from "./SortableField";
 import {revokeToken} from "../session/SessionActions";
-import Moment from "moment";
 import profileImage from '../profile.svg';
 import {setPreference} from "../app/AppActions";
 import {Countdown} from "./Countdown";
+import RaidPalView from "../raidpal/RaidPalView";
+import StreamInfoModal from "./StreamInfoModal";
 
-const REFRESH_INTERVAL = 15000;
+export const REFRESH_INTERVAL = 15000;
 
 /**
  *  Stream list view (the main screen of the app)
@@ -24,30 +25,18 @@ const REFRESH_INTERVAL = 15000;
 function StreamList() {
     const dispatch = useDispatch();
 
-    // todo - consider persisting local preference state to the app state
     const [sortBy, setSortBy] = useState(SORT_BY.VIEWER_COUNT); // default api sort
     const [sortDir, setSortDir] = useState(SORT_DIRECTION.DESC);
-    const { showTitles, showTags, showProfileImg } = useSelector(state => state.app.preferences);
-    // const [showTitles, setShowTitles] = useState(true);
-    // const [showTags, setShowTags] = useState(true);
-    // const [showProfileImg, setShowProfileImg] = useState(true);
     const [selectedStreamId, setSelectedStream] = useState(null);
+    const [selectedStreamUserId, setSelectedStreamUserId] = useState(null);
     const [showModal, setShowModal] = useState(null);
 
+    const {showTitles, showTags, showProfileImg} = useSelector(state => state.app.preferences);
     const streams = useSelector(state => state.streams);
     const { user_id, login } = useSelector(state => state.session.data);
     const userCache = useSelector(state => state.users.cache);
 
-    const { isFetching, lastError, data, raid, lastUpdated } = streams;
-    const { isFetching: isRaidFetching, /*isCancelled, lastError: raidLastError,*/ lastUpdated: raidStartedAt } = raid;
-
-    // Check if a raid is currently active, based on api response and time executed
-    let isRaiding = false;
-    if (raidStartedAt) {
-        // raids last up to 90 seconds from execute, but can be executed faster in the Twitch UX
-        // we'll at least block a second raid attempt until 90s after launch
-        isRaiding = Moment(raidStartedAt).add(90, 'seconds').isAfter(Moment());
-    }
+    const { isFetching, lastError, data, lastUpdated } = streams;
 
     useEffect(() => {
         // Fetch on load
@@ -87,9 +76,11 @@ function StreamList() {
 
     const handleStreamClick = useCallback((e) => {
         const id = e.currentTarget.getAttribute('data-id');
+        const userId = e.currentTarget.getAttribute('data-user-id');
         setSelectedStream(id);
+        setSelectedStreamUserId(userId);
         setShowModal(true);
-    }, [setSelectedStream, setShowModal]);
+    }, [setSelectedStream, setSelectedStreamUserId, setShowModal]);
 
     const handleCloseModal = useCallback(() => {
         setShowModal(false);
@@ -101,19 +92,16 @@ function StreamList() {
 
     // Storing the stream id because, if the streams list refreshes and the id is gone, the streamer went offline
     // Would be a total shame if someone popped the modal open and suddenly the streamer went offline while they were finishing up
-    const selectedStream = selectedStreamId ? data.find(stream => stream.id === selectedStreamId) : null;
-
-    const handleRaidStart = useCallback(() => {
-        // console.log('DO THE RAID', selectedStream.user_id);
-        dispatch(fetchRaidStart(selectedStream.user_id));
-    }, [dispatch, selectedStream]);
-
-    const handleRaidStop = useCallback(() => {
-        dispatch(fetchRaidStop());
-    }, [dispatch]);
+    // Also has a fallback userId to update the selectedStream, e.g. go-live or stream crash
+    const selectedStream = (selectedStreamId && data.find(stream => stream.id === selectedStreamId)) ||
+        (selectedStreamUserId && data.find(stream => stream.user_id === selectedStreamUserId)) || null;
 
     // Show a spinner on until stream list is loaded
-    if (!data) return <Loading />;
+    if (!data) return <Loading>
+        {lastError && <Alert variant="danger">
+            {lastError.error_description || lastError.error || lastError}
+        </Alert>}
+    </Loading>;
 
     // Copy the stream list and sort based on current  preference
     const streamList = [].concat(data).sort((a, b) => {
@@ -150,170 +138,126 @@ function StreamList() {
 
     return (
         <div className="Streams">
-            <Navbar sticky="top" bg="dark" variant="dark">
-                <Container>
-                    <Navbar.Brand>DirtyRaid™</Navbar.Brand>
-                    <Navbar.Toggle />
-                    <Navbar.Collapse className="justify-content-end">
-                        <NavDropdown title={<><img src={userCache[user_id]?.profile_image_url || twitchLogo} alt="" /> {userCache[user_id]?.display_name || login}</>} id="user-dropdown" align="end">
-                            <NavDropdown.Item onClick={handleSignOut}>Sign out</NavDropdown.Item>
-                        </NavDropdown>
-                        <Navbar.Text>
-
-                        </Navbar.Text>
-                    </Navbar.Collapse>
-                </Container>
-            </Navbar>
-            <Container>
-            {lastError && (
-                <Alert variant="danger">
-                    {lastError.error_description || lastError.error || lastError}
-                </Alert>
-            )}
-            <div className="display-opts">
-                <div className="opt-labels">
-                    <label>Display Options:</label>
-                    <label>Refreshes in <code><Countdown to={(lastUpdated||Date.now()) + REFRESH_INTERVAL} /></code>...</label>
+            <Tab.Container id="stream-tabs" defaultActiveKey="followed">
+                <div className="navbar navbar-expand navbar-dark bg-dark sticky-top">
+                    <Container>
+                        <Nav className="me-auto" navbar={true} bsPrefix="navbar-nav">
+                            <Nav.Item>
+                                <Nav.Link eventKey="followed">Followed</Nav.Link>
+                            </Nav.Item>
+                            <Nav.Item>
+                                <Nav.Link eventKey="raidpal">RaidPal</Nav.Link>
+                            </Nav.Item>
+                        </Nav>
+                        <Navbar.Toggle />
+                        <Navbar.Collapse className="justify-content-end">
+                            <NavDropdown title={<><img src={userCache[user_id]?.profile_image_url || twitchLogo} alt="" /> {userCache[user_id]?.display_name || login}</>} id="user-dropdown" align="end">
+                                <NavDropdown.Item onClick={handleSignOut}>Sign out</NavDropdown.Item>
+                            </NavDropdown>
+                        </Navbar.Collapse>
+                    </Container>
                 </div>
-                <div>
-                    <div>
-                        <Form.Check type="switch" id="show-title" label="Titles" checked={showTitles} onChange={handleToggleTitle} />
-                    </div>
-                    <div>
-                        <Form.Check type="switch" id="show-tags" label="Tags" checked={showTags} onChange={handleToggleTags} />
-                    </div>
-                    <div>
-                        <Form.Check type="switch" id="show-tags" label="Pic" checked={showProfileImg} onChange={handleToggleProfileImg} />
-                    </div>
-                    <div className="refresh text-end flex-grow-1">
-                        <Button disabled={isFetching} onClick={handleRefresh}><i className="bi bi-arrow-clockwise"/></Button>
-                    </div>
-                </div>
-            </div>
-            <div className="stream-sort">
-                <label>Sort by:</label>
-                <SortableField field={SORT_BY.USER_NAME} sortBy={sortBy} sortDir={sortDir} onChange={handleSort}>Name</SortableField>
-                <SortableField field={SORT_BY.GAME_NAME} sortBy={sortBy} sortDir={sortDir} onChange={handleSort}>Category</SortableField>
-                <SortableField field={SORT_BY.TITLE} sortBy={sortBy} sortDir={sortDir} onChange={handleSort}>Title</SortableField>
-                <SortableField field={SORT_BY.IS_MATURE} sortBy={sortBy} sortDir={sortDir} onChange={handleSort}>Mature</SortableField>
-                <SortableField field={SORT_BY.VIEWER_COUNT} sortBy={sortBy} sortDir={sortDir} onChange={handleSort}>Viewers</SortableField>
-                <SortableField field={SORT_BY.STARTED_AT} sortBy={sortBy} sortDir={sortDir} onChange={handleSort}>Uptime</SortableField>
-            </div>
-            <div className="stream-list">
-                {
-                    streamList.map((stream, i) => {
-                        const profile = userCache[stream.user_id];
-                        return (
-                            <div className="stream" key={i} data-id={stream.id} onClick={handleStreamClick}>
-                                <div className="info-container">
-                                    {showProfileImg && (
-                                        <div className="profile-container">
-                                            <img src={profile?.profile_image_url || profileImage} alt="" />
-                                        </div>
-                                    )}
-                                    <div className="stream-info">
-                                        <Row className="whodis">
-                                            <Col>
-                                                <div className="d-flex justify-content-between">
-                                                    <div className="flex-grow-1 user-name"><span>{profile && profile.broadcaster_type === 'partner' &&
-                                                        <i className="bi bi-patch-check-fill partner"/>}{stream.user_name}</span></div>
-                                                    <div className="flex-grow-0 participation">
-                                                        <span className="viewers"><i className="bi bi-eye-fill"/> {
-                                                            CondensedFormatter(stream.viewer_count, 0)}</span>
-                                                        <TimeDuration time={stream.started_at} />
-                                                    </div>
-                                                </div>
-                                            </Col>
-                                        </Row>
-                                        {showTitles && (
-                                            <Row>
-                                                <Col className="title">{stream.title}</Col>
-                                            </Row>
-                                        )}
+                <Tab.Content>
+                    <Tab.Pane eventKey="followed">
+                        <Container>
+                            {lastError && (
+                                <Alert variant="danger">
+                                    {lastError.error_description || lastError.error || lastError}
+                                </Alert>
+                            )}
+                            <div className="display-opts">
+                                <div className="opt-labels">
+                                    <label>Display Options:</label>
+                                    <label>Refreshes in <code><Countdown to={(lastUpdated||Date.now()) + REFRESH_INTERVAL} /></code>...</label>
+                                </div>
+                                <div>
+                                    <div>
+                                        <Form.Check type="switch" id="show-title" label="Titles" checked={showTitles} onChange={handleToggleTitle} />
+                                    </div>
+                                    <div>
+                                        <Form.Check type="switch" id="show-tags" label="Tags" checked={showTags} onChange={handleToggleTags} />
+                                    </div>
+                                    <div>
+                                        <Form.Check type="switch" id="show-tags" label="Pic" checked={showProfileImg} onChange={handleToggleProfileImg} />
+                                    </div>
+                                    <div className="refresh text-end flex-grow-1">
+                                        <Button disabled={isFetching} onClick={handleRefresh}><i className="bi bi-arrow-clockwise"/></Button>
                                     </div>
                                 </div>
-                                {showTags && (
-                                    <Row>
-                                        <Col className="tags">
-                                            <Badge bg="game">{stream.game_name}</Badge>
-                                            {stream.is_mature && <Badge bg="warning">Mature</Badge>}
-                                            {(stream.tags||[]).sort((a, b) => a.localeCompare(b)).map((tag, i) => (
-                                                <Badge bg="tag" key={i}>{tag}</Badge>
-                                            ))}
-                                        </Col>
-                                    </Row>
-                                )}
-
-
                             </div>
-                        );
-                    })
-                }
-            </div>
-                <Modal show={showModal} onHide={handleCloseModal} size="lg" centered className="stream-modal">
-                    <Modal.Header closeButton>
-                        <Modal.Title id="stuffs">
-                            {userCache[selectedStream?.user_id] && userCache[selectedStream?.user_id].broadcaster_type === 'partner' &&
-                                <i className="bi bi-patch-check-fill partner"/>}
-                            {selectedStream?.user_name || 'Streamer Offline!'}
-                        </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        {selectedStream ? (
-                            <>
-                                <Row>
-                                    <Col>
-                                        <img src={selectedStream.thumbnail_url.replace(/{width}x{height}/, '400x225')+'?nonce='+lastUpdated} alt="" />
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col className="title">{selectedStream.title}</Col>
-                                </Row>
-                                <Row>
-                                    <Col>
-                                        <div className="flex-grow-0 participation">
-                                    <span className="viewers"><i className="bi bi-eye-fill"/> {
-                                        CondensedFormatter(selectedStream.viewer_count, 0)}
-                                    </span>
-                                            <TimeDuration time={selectedStream.started_at} />
-                                        </div>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col className="tags">
-                                        <Badge bg="game">{selectedStream.game_name}</Badge>
-                                        {selectedStream.is_mature && <Badge bg="warning">Mature</Badge>}
-                                        {(selectedStream.tags||[]).sort((a, b) => a.localeCompare(b)).map((tag, i) => (
-                                            <Badge bg="tag" key={i}>{tag}</Badge>
-                                        ))}
-                                    </Col>
-                                </Row>
-                            </>
-                        ) : (
-                            <Row>
-                                <Col>
-                                    <Alert variant="danger">
-                                        The streamer you selected no longer appears to be online!
-                                    </Alert>
-                                </Col>
-                            </Row>
-                        )}
+                            <div className="stream-sort">
+                                <label>Sort by:</label>
+                                <SortableField field={SORT_BY.USER_NAME} sortBy={sortBy} sortDir={sortDir} onChange={handleSort}>Name</SortableField>
+                                <SortableField field={SORT_BY.GAME_NAME} sortBy={sortBy} sortDir={sortDir} onChange={handleSort}>Category</SortableField>
+                                <SortableField field={SORT_BY.TITLE} sortBy={sortBy} sortDir={sortDir} onChange={handleSort}>Title</SortableField>
+                                <SortableField field={SORT_BY.IS_MATURE} sortBy={sortBy} sortDir={sortDir} onChange={handleSort}>Mature</SortableField>
+                                <SortableField field={SORT_BY.VIEWER_COUNT} sortBy={sortBy} sortDir={sortDir} onChange={handleSort}>Viewers</SortableField>
+                                <SortableField field={SORT_BY.STARTED_AT} sortBy={sortBy} sortDir={sortDir} onChange={handleSort}>Uptime</SortableField>
+                            </div>
+                            <div className="stream-list">
+                                {
+                                    streamList.map((stream, i) => {
+                                        const profile = userCache[stream.user_id];
+                                        return (
+                                            <div className="stream" key={i} data-id={stream.id} data-user-id={stream.user_id} onClick={handleStreamClick}>
+                                                <div className="info-container">
+                                                    {showProfileImg && (
+                                                        <div className="profile-container">
+                                                            <img src={profile?.profile_image_url || profileImage} alt="" />
+                                                        </div>
+                                                    )}
+                                                    <div className="stream-info">
+                                                        <Row className="whodis">
+                                                            <Col>
+                                                                <div className="d-flex justify-content-between">
+                                                                    <div className="flex-grow-1 user-name"><span>{profile && profile.broadcaster_type === 'partner' &&
+                                                                        <i className="bi bi-patch-check-fill partner"/>}{stream.user_name}</span></div>
+                                                                    <div className="flex-grow-0 participation">
+                                                                        <span className="viewers"><i className="bi bi-eye-fill"/> {
+                                                                            CondensedFormatter(stream.viewer_count, 0)}</span>
+                                                                        <TimeDuration time={stream.started_at} />
+                                                                    </div>
+                                                                </div>
+                                                            </Col>
+                                                        </Row>
+                                                        {showTitles && (
+                                                            <Row>
+                                                                <Col className="title">{stream.title}</Col>
+                                                            </Row>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                {showTags && (
+                                                    <Row>
+                                                        <Col className="tags">
+                                                            <Badge bg="game">{stream.game_name}</Badge>
+                                                            {stream.is_mature && <Badge bg="warning">Mature</Badge>}
+                                                            {(stream.tags||[]).sort((a, b) => a.localeCompare(b)).map((tag, i) => (
+                                                                <Badge bg="tag" key={i}>{tag}</Badge>
+                                                            ))}
+                                                        </Col>
+                                                    </Row>
+                                                )}
 
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button className="viewStream" variant="secondary" href={"https://twitch.tv/"+selectedStream?.user_login} disabled={!selectedStream} target="_blank" rel="noreferrer">View Stream <i className="bi bi-box-arrow-up-right"/></Button>
-                        <div className="flex-grow-1" />
-                        {selectedStream && (
-                            isRaiding ? (
-                                <Button disabled={isRaidFetching} variant="warning" onClick={handleRaidStop}>Cancel Raid</Button>
-                            ) : (
-                                <Button disabled={isRaidFetching} variant="danger" onClick={handleRaidStart}>Raid Now</Button>
-                            )
-                        )}
-                        <Button variant="secondary" onClick={handleCloseModal}>Close</Button>
-                    </Modal.Footer>
-                </Modal>
-            </Container>
+
+                                            </div>
+                                        );
+                                    })
+                                }
+                                {!streamList.length && (
+                                    <div className="no-streams">
+                                        <Alert variant="warning">That's weird, none of your followed channels are online :(</Alert>
+                                    </div>
+                                )}
+                            </div>
+                            <StreamInfoModal selectedStream={selectedStream} selectedUserId={selectedStreamUserId} lastUpdated={lastUpdated} handleCloseModal={handleCloseModal} showModal={showModal} />
+                        </Container>
+                    </Tab.Pane>
+                    <Tab.Pane eventKey="raidpal">
+                        <RaidPalView />
+                    </Tab.Pane>
+                </Tab.Content>
+            </Tab.Container>
         </div>
     );
 }

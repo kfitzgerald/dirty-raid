@@ -1,5 +1,12 @@
 .Loading {
   text-align: center;
+
+  .alert {
+    position: absolute;
+    top: 0;
+    width: 96vw;
+    margin: 2vw;
+  }
 }
 
 .Loading-logo {
