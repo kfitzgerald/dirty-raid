@@ -79,7 +79,7 @@ export default function StreamInfoModal({ selectedStream, selectedUserId, lastUp
                         <Row>
                             <Col>
                                 <Alert variant="danger">
-                                    <i className="bi bi-exclamation-diamond"/> This channel is not online!
+                                    <i className="bi bi-exclamation-diamond"/> This channel is offline!
                                 </Alert>
                             </Col>
                         </Row>
