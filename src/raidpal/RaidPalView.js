@@ -94,7 +94,7 @@ export default function RaidPalView() {
         // Fetch RP user event data
         dispatch(fetchRaidPalUser((err, data) => {
             // Preselect the best event
-            if (data && data.events_joined.length > 0) {
+            if (data?.events_joined?.length) {
 
                 // TODO: compare channel slot to now and choose the closest one, could be participating in multiple events
                 // let liveEvents = data.events_joined
