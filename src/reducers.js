@@ -5,6 +5,7 @@ import StreamReducer from "./streams/StreamReducer";
 import UserReducer from "./users/UserReducer";
 import RaidPalReducer from "./raidpal/RaidPalReducer";
 import FollowerReducer from "./followers/FollowerReducer";
+import TeamsReducer from "./teams/TeamsReducer";
 
 // noinspection JSUnusedGlobalSymbols
 const reducers = combineReducers({
@@ -14,6 +15,7 @@ const reducers = combineReducers({
     users: UserReducer,
     raidpal: RaidPalReducer,
     followers: FollowerReducer,
+    teams: TeamsReducer
 });
 
 export default reducers;

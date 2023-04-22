@@ -13,6 +13,7 @@ import profileImage from '../profile.svg';
 import {setPreference} from "../app/AppActions";
 import {Countdown} from "./Countdown";
 import RaidPalView from "../raidpal/RaidPalView";
+import TeamsView from "../teams/TeamsView";
 import StreamInfoModal from "./StreamInfoModal";
 
 export const REFRESH_INTERVAL = 15000;
@@ -35,8 +36,11 @@ function StreamList() {
     const streams = useSelector(state => state.streams);
     const { user_id, login } = useSelector(state => state.session.data);
     const userCache = useSelector(state => state.users.cache);
+    const { isFetching: isTeamsFetching, data: teamsData } = useSelector(state => state.teams);
+
 
     const { isFetching, lastError, data, lastUpdated } = streams;
+
 
     useEffect(() => {
         // Fetch on load
@@ -145,6 +149,13 @@ function StreamList() {
                             <Nav.Item>
                                 <Nav.Link eventKey="followed">Followed</Nav.Link>
                             </Nav.Item>
+                            {
+                                !isTeamsFetching && teamsData?.length && (
+                                    <Nav.Item>
+                                        <Nav.Link eventKey="teams">Teams</Nav.Link>
+                                    </Nav.Item>
+                                )
+                            }
                             <Nav.Item>
                                 <Nav.Link eventKey="raidpal">RaidPal</Nav.Link>
                             </Nav.Item>
@@ -255,6 +266,9 @@ function StreamList() {
                     </Tab.Pane>
                     <Tab.Pane eventKey="raidpal">
                         <RaidPalView />
+                    </Tab.Pane>
+                    <Tab.Pane eventKey="teams">
+                        <TeamsView />
                     </Tab.Pane>
                 </Tab.Content>
             </Tab.Container>
