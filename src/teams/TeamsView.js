@@ -97,7 +97,6 @@ export default function TeamsView() {
                     )}
                 </Nav>
                 <hr />
-                <h2>{selectedTeam.team_display_name}</h2>
                 <ShowMoreText lines={3} className="description mb-3">
                     {selectedTeam.info}
                 </ShowMoreText>

@@ -19,7 +19,6 @@ export default function StreamInfoModal({ selectedStream, selectedUserId, lastUp
 
     const handleRaidStart = useCallback(() => {
         // console.log('DO THE RAID', selectedStream.user_id);
-        dispatch(postChannelMessage(`Thank you for watching, we are raiding over to @${selectedStream.user_login} if the raid somehow fails, please click here: twitch.tv/${selectedStream.user_login}`,`green`));
         dispatch(fetchRaidStart(selectedStream.user_id));
     }, [dispatch, selectedStream]);
 
