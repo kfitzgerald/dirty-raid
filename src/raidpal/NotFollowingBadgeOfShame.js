@@ -17,6 +17,6 @@ export default function NotFollowingBadgeOfShame({ broadcaster_id }) {
     if (entry.followed_at) {
         return null; // already following
     } else {
-        return <><Badge bg="warning">Not Following</Badge><br /></>
+        return <><Badge bg="warning">Not Following</Badge></>
     }
 }

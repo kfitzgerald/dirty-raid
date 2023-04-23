@@ -247,8 +247,10 @@ export default function RaidPalView() {
                                         </div>
                                     </div>
                                     <div className="stream-status">
-                                        {userBadge}
-                                        {currentLiveStream && <Badge bg="danger">Live</Badge>}
+                                        <span>
+                                            {userBadge}
+                                            {currentLiveStream && <Badge bg="danger">Live</Badge>}
+                                        </span>
                                         {currentLiveStream && <span className="viewers"><i className="bi bi-eye-fill"/> {
                                             CondensedFormatter(currentLiveStream.viewer_count, 0)}
                                         </span>}

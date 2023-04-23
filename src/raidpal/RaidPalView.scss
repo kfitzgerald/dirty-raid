@@ -136,10 +136,11 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: flex-end;
 
       .viewers {
         font-size: .8rem;
+        margin-right: .5em;
 
         i {
           color: #d00101;
