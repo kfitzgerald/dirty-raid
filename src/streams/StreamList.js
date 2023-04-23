@@ -234,6 +234,11 @@ function StreamList() {
                                                     </div>
                                                 </Col>
                                             </Row>
+                                            {showTitles && (
+                                                <Row>
+                                                    <Col className="title">Choose a random raid target.</Col>
+                                                </Row>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
