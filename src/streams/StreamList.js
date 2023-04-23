@@ -15,7 +15,6 @@ import {Countdown} from "./Countdown";
 import RaidPalView from "../raidpal/RaidPalView";
 import TeamsView from "../teams/TeamsView";
 import StreamInfoModal from "./StreamInfoModal";
-
 export const REFRESH_INTERVAL = 15000;
 
 /**
@@ -85,6 +84,16 @@ function StreamList() {
         setSelectedStreamUserId(userId);
         setShowModal(true);
     }, [setSelectedStream, setSelectedStreamUserId, setShowModal]);
+
+    const handleFeelingLucky = useCallback(() => {
+        if(data?.length) {
+            const randomStream = data[Math.floor(Math.random()*data.length)];
+            setSelectedStream(randomStream.id);
+            setSelectedStreamUserId(randomStream.user_id);
+            setShowModal(true);
+        }
+    }, [setSelectedStream, setSelectedStreamUserId, setShowModal, data])
+
 
     const handleCloseModal = useCallback(() => {
         setShowModal(false);
@@ -206,6 +215,29 @@ function StreamList() {
                                 <SortableField field={SORT_BY.STARTED_AT} sortBy={sortBy} sortDir={sortDir} onChange={handleSort}>Uptime</SortableField>
                             </div>
                             <div className="stream-list">
+
+                                <div className="stream" onClick={handleFeelingLucky}>
+                                    <div className="info-container">
+                                        {showProfileImg && (
+                                            <div className="profile-container">
+                                                <img src={'/roulette.jpg'} alt="" />
+                                            </div>
+                                        )}
+                                        <div className="stream-info">
+                                            <Row className="whodis">
+                                                <Col>
+                                                    <div className="d-flex justify-content-between">
+                                                        <div className="flex-grow-1 user-name"><span>Raid Roulette?</span></div>
+                                                        <div className="flex-grow-0 participation">
+
+                                                        </div>
+                                                    </div>
+                                                </Col>
+                                            </Row>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 {
                                     streamList.map((stream, i) => {
                                         const profile = userCache[stream.user_id];

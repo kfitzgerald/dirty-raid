@@ -4,12 +4,11 @@ import {TimeDuration} from "./TimeDuration";
 import {useDispatch, useSelector} from "react-redux";
 import Moment from "moment";
 import {useCallback} from "react";
-import {fetchRaidStart, fetchRaidStop, postChannelMessage} from "./StreamActions";
+import {fetchRaidStart, fetchRaidStop} from "./StreamActions";
 import ShowMoreText from "react-show-more-text";
 
 
 export default function StreamInfoModal({ selectedStream, selectedUserId, lastUpdated, showModal, handleCloseModal }) {
-    console.log(selectedStream)
     const dispatch = useDispatch();
     const userCache = useSelector(state => state.users.cache);
     const { user_id } = useSelector(state => state.session.data);
