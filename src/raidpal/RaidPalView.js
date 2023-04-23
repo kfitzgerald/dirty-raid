@@ -13,6 +13,7 @@ import {Countdown} from "../streams/Countdown";
 import {REFRESH_INTERVAL} from "../streams/StreamList";
 import {setPreference} from "../app/AppActions";
 import StreamInfoModal from "../streams/StreamInfoModal";
+import {CondensedFormatter} from "../common/PrettyNumber";
 
 const RAIDPAL_REFRESH_INTERVAL = 900000; // 15 min
 
@@ -225,7 +226,7 @@ export default function RaidPalView() {
 
                             let userBadge = null;
                             if (slot.broadcaster_id === user_id) {
-                                userBadge = <><Badge bg="success">You</Badge><br /></>;
+                                userBadge = <><Badge bg="success">You</Badge></>;
                             } else if (slot.broadcaster_id) {
                                 userBadge = <NotFollowingBadgeOfShame broadcaster_id={slot.broadcaster_id} />;
                             }
@@ -248,6 +249,9 @@ export default function RaidPalView() {
                                     <div className="stream-status">
                                         {userBadge}
                                         {currentLiveStream && <Badge bg="danger">Live</Badge>}
+                                        {currentLiveStream && <span className="viewers"><i className="bi bi-eye-fill"/> {
+                                            CondensedFormatter(currentLiveStream.viewer_count, 0)}
+                                        </span>}
                                     </div>
                                 </div>
                             );
