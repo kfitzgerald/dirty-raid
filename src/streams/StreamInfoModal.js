@@ -1,15 +1,17 @@
-import {Alert, Badge, Button, Col, Modal, Row} from "react-bootstrap";
+import {Alert, Badge, Button, Col, Form, Modal, Row} from "react-bootstrap";
 import {CondensedFormatter} from "../common/PrettyNumber";
 import {TimeDuration} from "./TimeDuration";
 import {useDispatch, useSelector} from "react-redux";
 import Moment from "moment";
 import {useCallback} from "react";
-import {fetchRaidStart, fetchRaidStop} from "./StreamActions";
+import {fetchRaidStart, fetchRaidStop, postChannelMessage} from "./StreamActions";
 import ShowMoreText from "react-show-more-text";
+import useLocalStorage from '../hooks/useLocalStorage'
 
 
 export default function StreamInfoModal({ selectedStream, selectedUserId, lastUpdated, showModal, handleCloseModal }) {
     const dispatch = useDispatch();
+    const [raidChatMessage, setRaidChatMessage] = useLocalStorage('raidChatMessage', {});
     const userCache = useSelector(state => state.users.cache);
     const { user_id } = useSelector(state => state.session.data);
     const streams = useSelector(state => state.streams);
@@ -18,8 +20,12 @@ export default function StreamInfoModal({ selectedStream, selectedUserId, lastUp
 
     const handleRaidStart = useCallback(() => {
         // console.log('DO THE RAID', selectedStream.user_id);
+        if(raidChatMessage?.enabled) {
+            const chatMessage = raidChatMessage?.message.replace(/{target}/g, selectedStream.user_login)
+            dispatch(postChannelMessage(chatMessage, 'green', () => {}))
+        }
         dispatch(fetchRaidStart(selectedStream.user_id));
-    }, [dispatch, selectedStream]);
+    }, [dispatch, selectedStream, raidChatMessage?.message, raidChatMessage?.enabled]);
 
     const handleRaidStop = useCallback(() => {
         dispatch(fetchRaidStop());
@@ -33,6 +39,29 @@ export default function StreamInfoModal({ selectedStream, selectedUserId, lastUp
     }
 
     const selectedUser = userCache[selectedStream?.user_id || selectedUserId];
+
+    if(raidChatMessage?.message === undefined) {
+        setRaidChatMessage({
+            enabled: true,
+            message: 'Thanks for watching! we are now raiding over to {target} if the raid should fail, please click here: twitch.tv/{target}'
+        });
+    }
+
+    const handlePostChatChange = useCallback((e) => {
+        const checked = e.target.checked;
+        setRaidChatMessage({
+            ...raidChatMessage,
+            ...{enabled: checked}
+        })
+    }, [raidChatMessage, setRaidChatMessage]);
+
+    const handlePostChatMessageChange = useCallback((e) => {
+        const message = e.target.value;
+        setRaidChatMessage({
+            ...raidChatMessage,
+            ...{message: message}
+        })
+    }, [raidChatMessage, setRaidChatMessage]);
 
     return (
         <Modal show={showModal} onHide={handleCloseModal} size="lg" centered className="stream-modal">
@@ -73,6 +102,26 @@ export default function StreamInfoModal({ selectedStream, selectedUserId, lastUp
                                 ))}
                             </Col>
                         </Row>
+                        <Row>
+                            <Col className="chat-toggle">
+                                <Form.Check type="switch" id="show-title" label="Post chat message" checked={raidChatMessage?.enabled} onChange={handlePostChatChange} />
+                            </Col>
+                        </Row>
+                        {raidChatMessage?.enabled ? (
+                            <Row>
+                                <Col className="chat-message">
+                                    <Form.Control
+                                        as="textarea"
+                                        bg="secondary"
+                                        placeholder="The variable {target} will be replaced with the target channel name..."
+                                        style={{ height: '70px' }}
+                                        onChange={handlePostChatMessageChange}
+                                        value={raidChatMessage?.message}
+                                    />
+                                </Col>
+                            </Row>
+                        ) : null}
+
                     </>
                 ) : (
                     <>
