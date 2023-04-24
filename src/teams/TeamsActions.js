@@ -1,4 +1,5 @@
 import {apiGet} from "../common/API";
+import {sliceIntoChunks} from '../common/utils'
 import {
     revokeToken
 } from "../session/SessionActions";
@@ -161,23 +162,24 @@ export function fetchTeamStreams(user_ids, callback=() => {}) {
         const queue = [].concat(user_ids);
         const pageSize = 100;
         let streamList = [];
-        let ids, done = false, body, error, after, query;
-        while (!done) { // ooo scary!
+        let body, error, after, query;
 
-            // pull a batch of ids
-            ids = queue.splice(0, 100);
+        // split the id's into chunks of 100
+        const chunks = sliceIntoChunks(queue, pageSize);
 
+        for (let chunk of chunks) {
             // Build query
-            query = { user_id: ids, first: pageSize };
+            query = { user_id: chunk, first: pageSize };
             if (after) query.after = after;
 
             // Execute request
             ({ error, body } = await apiGet('https://api.twitch.tv/helix/streams', { query, bearer: access_token})
-                    .then(body => {
-                        return { body, error: null };
-                    }, error => {
-                        return { error };
-                    })
+                .then(body => {
+                    console.log('Successful requuest: ', query)
+                    return { body, error: null };
+                }, error => {
+                    return { error };
+                })
             );
 
             // If the request failed, handle it
@@ -194,10 +196,6 @@ export function fetchTeamStreams(user_ids, callback=() => {}) {
             } else {
                 // Append the page to the results
                 streamList = streamList.concat(body.data);
-
-                // Check if there is another page to fetch
-                after = body.pagination.cursor;
-                done = !body.pagination.cursor;
             }
         }
 
