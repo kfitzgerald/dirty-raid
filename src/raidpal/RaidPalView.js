@@ -200,7 +200,7 @@ export default function RaidPalView() {
             )}
             {selectedEvent && (
                 <div className="event">
-                    <h2>{selectedEvent.title}</h2>
+                    <Nav.Link target="_blank" href={selectedEvent.raidpal_link}><h2>{selectedEvent.title}</h2></Nav.Link>
                     <ShowMoreText lines={3} className="description mb-3">
                         {selectedEvent.description}
                     </ShowMoreText>

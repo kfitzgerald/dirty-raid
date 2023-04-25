@@ -175,7 +175,6 @@ export function fetchTeamStreams(user_ids, callback=() => {}) {
             // Execute request
             ({ error, body } = await apiGet('https://api.twitch.tv/helix/streams', { query, bearer: access_token})
                 .then(body => {
-                    console.log('Successful requuest: ', query)
                     return { body, error: null };
                 }, error => {
                     return { error };
