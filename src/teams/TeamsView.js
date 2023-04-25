@@ -72,11 +72,9 @@ export default function TeamsView() {
     },[dispatch, handleTeamChange])
 
     if(!isTeamsFetching && !teamStreamData) {
-        return <Container>
-            <Alert variant="danger" className="mt-3">
-                You do not appear to be a member of any teams.
-            </Alert>
-        </Container>
+        // the tab shouldn't be shown if there are no teams so no need to render anything
+        return null
+
     }
 
     return <Container>

@@ -50,7 +50,7 @@ export function fetchUsersTeams(callback = () => {}) {
                     callback(null, body.data);
                 } else {
                     dispatch(receiveUsersTeamsError(body));
-                    callback(body);
+                    callback(null, body);
                 }
             })
     }

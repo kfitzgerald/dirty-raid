@@ -27,6 +27,7 @@ function StreamList() {
     useEffect(() => {
         // Fetch on load
         dispatch(fetchFollowedStreams());
+        dispatch(fetchUsersTeams());
         // Refresh every 15s
         const refreshInterval = setInterval(() => {
             dispatch(fetchFollowedStreams());
@@ -51,9 +52,11 @@ function StreamList() {
                             <Nav.Item>
                                 <Nav.Link eventKey="followed">Followed</Nav.Link>
                             </Nav.Item>
-                                    <Nav.Item>
-                                        <Nav.Link eventKey="teams">Teams</Nav.Link>
-                                    </Nav.Item>
+                            {!isTeamsFetching && teamsData ? (
+                                <Nav.Item>
+                                    <Nav.Link eventKey="teams">Teams</Nav.Link>
+                                </Nav.Item>
+                            ) : null}
                             <Nav.Item>
                                 <Nav.Link eventKey="raidpal">RaidPal</Nav.Link>
                             </Nav.Item>
@@ -73,9 +76,9 @@ function StreamList() {
                     <Tab.Pane eventKey="raidpal">
                         <RaidPalView />
                     </Tab.Pane>
-                            <Tab.Pane eventKey="teams">
-                                <TeamsView />
-                            </Tab.Pane>
+                    <Tab.Pane eventKey="teams">
+                        <TeamsView />
+                    </Tab.Pane>
                 </Tab.Content>
             </Tab.Container>
         </div>
