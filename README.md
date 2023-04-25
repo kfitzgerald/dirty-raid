@@ -9,22 +9,43 @@ Features:
 - **OBS Dock** – Add this app as a custom browser dock to have a seamless stream experience.
 - **No Typos** – Never worry about a channel name typo again, just click the big red button to raid!
 - **Real Time** – The app refreshes automatically (every 15s) so you'll always have the latest status.
-- **Sorting** – Sort your followed channels by name, viewer count, uptime and more! 
+- **Sorting** – Sort your followed channels by name, viewer count, uptime and more!
+- **[RaidPal](https://raidpal.com/) integration** – See how many raiders are arriving, check your raid target is online, uptime and more!
+- **Twitch Teams integration** – See all live twitch team members from any team you are a member of.
+- **Raid Roulette** – Can't decide who to raid? no problem, let Dirty Raid Target Finder pick a target for you.
+- **Raid Announcements** – Post an announcement in chat when you start a raid to let any failed raiders know where you are going.
 
-> Coming soon: [RaidPal](https://raidpal.com) integration! Flawlessly raid out on RaidPal events. 
 
 ## Screenshots
 
-By default, stream title and tags are visible:
-![](docs/screenshot-list-full.png)
+By default, stream title, tags and profile pics are visible, click the raid roulette option to choose a random raid target:
+
+![](docs/screenshot-followed-channels.png)
 
 Optionally, turn off the info to get a condensed list:
-![](docs/screenshot-list-min.png)
+
+![](docs/screenshot-followed-channels-collapsed-view.png)
+
+If you are a member of a twitch team, click the teams tab to see any live team members:
+
+![](docs/screenshot-teams-tab.png)
+
+Click the [RaidPal](https://raidpal.com/) tab to view any [RaidPal](https://raidpal.com/) raid trains you may be a part of:
+
+![](docs/screenshot-raidpal-tab.png)
 
 Select a channel to see the stream info and push the big red button to start the raid!
-![](docs/screenshot-stream.png)
+
+![](docs/screenshot-raid-modal.png)
+
+Click the post chat message option to customise and post a raid message in your chat for those that may miss the raid:
+
+![](docs/screenshot-raid-modal-with-message.png)
+
+![](docs/screenshot-raid-announcement.png)
 
 After starting the raid, you can cancel for up to 90 seconds or until the raid is executed from the Twitch UX.
+
 ![](docs/screenshot-cancel.png)
 
 > Note: The Twitch API limits you to no more than 10 raids in a 10-minute window. Be decisive with your raids!
