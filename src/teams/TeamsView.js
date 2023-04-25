@@ -5,6 +5,8 @@ import {fetchTeamMembers, fetchTeamStreams, fetchUsersTeams} from "./TeamsAction
 import ReUsableStreamList from "../common/ReUsableStreamList";
 import ShowMoreText from "react-show-more-text";
 import {REFRESH_INTERVAL} from "../streams/StreamList";
+import sadLogo from "../sad-logo.svg";
+import "./TeamsView.scss";
 
 
 function getTeamUserIds(team, user_id) {
@@ -102,9 +104,9 @@ export default function TeamsView() {
                 </ShowMoreText>
                 <hr />
                 {!teamStreamData?.length && !isStreamsFetching ? (
-                    <Alert variant="danger" className="mt-3">
-                        There are currently no team members live...
-                    </Alert>
+                    <div className="no-team-members-live">
+                        <img src={sadLogo} className="" alt="logo" />
+                    </div>
                 ) : null}
                 {teamStreamData?.length ? (
                     // Re-usable streams component with filters here
