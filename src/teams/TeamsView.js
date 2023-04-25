@@ -2,7 +2,7 @@ import {Alert, Container, Nav, NavDropdown} from "react-bootstrap";
 import {useDispatch, useSelector} from "react-redux";
 import {useCallback, useEffect, useState} from "react";
 import {fetchTeamMembers, fetchTeamStreams, fetchUsersTeams} from "./TeamsActions";
-import ReUsableStreamList from "../common/ReUsableStreamList";
+import ReUsableStreamList from "../streams/ReUsableStreamList";
 import ShowMoreText from "react-show-more-text";
 import {REFRESH_INTERVAL} from "../streams/StreamList";
 import sadLogo from "../sad-logo.svg";
@@ -100,7 +100,7 @@ export default function TeamsView() {
                 </Nav>
                 <hr />
                 <ShowMoreText lines={3} className="description mb-3">
-                    {selectedTeam.info}
+                    {selectedTeam?.info}
                 </ShowMoreText>
                 <hr />
                 {!teamStreamData?.length && !isStreamsFetching ? (
@@ -109,8 +109,6 @@ export default function TeamsView() {
                     </div>
                 ) : null}
                 {teamStreamData?.length ? (
-                    // Re-usable streams component with filters here
-
                     <ReUsableStreamList
                         handleRefresh={handleRefresh}
                         streams={teamStreamData}

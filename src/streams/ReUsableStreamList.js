@@ -1,14 +1,14 @@
 import {Alert, Badge, Button, Col, Form, Row} from "react-bootstrap";
 import {useDispatch, useSelector} from "react-redux";
 import {useCallback, useState} from "react";
-import {SORT_BY, SORT_DIRECTION, SortableField} from "../streams/SortableField";
+import {SORT_BY, SORT_DIRECTION, SortableField} from "./SortableField";
 import {setPreference} from "../app/AppActions";
-import {Countdown} from "../streams/Countdown";
+import {Countdown} from "./Countdown";
 import profileImage from "../profile.svg";
-import {CondensedFormatter} from "./PrettyNumber";
-import {TimeDuration} from "../streams/TimeDuration";
-import StreamInfoModal from "../streams/StreamInfoModal";
-import {REFRESH_INTERVAL} from "../streams/StreamList";
+import {CondensedFormatter} from "../common/PrettyNumber";
+import {TimeDuration} from "./TimeDuration";
+import StreamInfoModal from "./StreamInfoModal";
+import {REFRESH_INTERVAL} from "./StreamList";
 
 
 function ReUsableStreamList({streams, lastUpdated, isFetching, handleRefresh}) {
