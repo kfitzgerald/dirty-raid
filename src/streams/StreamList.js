@@ -8,6 +8,7 @@ import {revokeToken} from "../session/SessionActions";
 import RaidPalView from "../raidpal/RaidPalView";
 import TeamsView from "../teams/TeamsView";
 import FollowersView from "../followers/FollowersView";
+import {fetchUsersTeams} from "../teams/TeamsActions";
 export const REFRESH_INTERVAL = 15000;
 
 /**
@@ -26,7 +27,6 @@ function StreamList() {
     useEffect(() => {
         // Fetch on load
         dispatch(fetchFollowedStreams());
-
         // Refresh every 15s
         const refreshInterval = setInterval(() => {
             dispatch(fetchFollowedStreams());
@@ -51,13 +51,9 @@ function StreamList() {
                             <Nav.Item>
                                 <Nav.Link eventKey="followed">Followed</Nav.Link>
                             </Nav.Item>
-                            {
-                                !isTeamsFetching && teamsData?.length && (
                                     <Nav.Item>
                                         <Nav.Link eventKey="teams">Teams</Nav.Link>
                                     </Nav.Item>
-                                )
-                            }
                             <Nav.Item>
                                 <Nav.Link eventKey="raidpal">RaidPal</Nav.Link>
                             </Nav.Item>
@@ -77,9 +73,9 @@ function StreamList() {
                     <Tab.Pane eventKey="raidpal">
                         <RaidPalView />
                     </Tab.Pane>
-                    <Tab.Pane eventKey="teams">
-                        <TeamsView />
-                    </Tab.Pane>
+                            <Tab.Pane eventKey="teams">
+                                <TeamsView />
+                            </Tab.Pane>
                 </Tab.Content>
             </Tab.Container>
         </div>
