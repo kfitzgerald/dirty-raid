@@ -123,7 +123,7 @@ function ReUsableStreamList({streams, lastUpdated, isFetching, handleRefresh}) {
         </div>
         <div className="stream-list">
             {
-                streamList.map((stream, i) => {
+                Boolean(streams?.length) && streamList.map((stream, i) => {
                     const profile = userCache[stream.user_id];
                     return (
                         <div className="stream" key={i} data-id={stream.id} data-user-id={stream.user_id} onClick={handleStreamClick}>

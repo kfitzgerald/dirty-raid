@@ -5,7 +5,6 @@ import {fetchTeamMembers, fetchTeamStreams, fetchUsersTeams} from "./TeamsAction
 import ReUsableStreamList from "../streams/ReUsableStreamList";
 import ShowMoreText from "react-show-more-text";
 import {REFRESH_INTERVAL} from "../streams/StreamList";
-import sadLogo from "../sad-logo.svg";
 import "./TeamsView.scss";
 
 
@@ -110,8 +109,8 @@ export default function TeamsView() {
                 </ShowMoreText>
                 <hr />
                 {!teamStreamData?.length && !isStreamsFetching ? (
-                    <div className="no-team-members-live">
-                        <img src={sadLogo} className="" alt="logo" />
+                    <div className="no-streams">
+                        <Alert variant="warning">That's weird, none of your team members are online :(</Alert>
                     </div>
                 ) : null}
                 {teamStreamData?.length ? (

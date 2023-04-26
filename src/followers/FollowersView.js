@@ -25,13 +25,11 @@ export default function FollowersView() {
             </Alert>
         )}
 
-        {data?.length ? (
-            <ReUsableStreamList
-                handleRefresh={handleRefresh}
-                streams={data}
-                lastUpdated={lastUpdated}
-                isFetching={isFetching}
-            />
-        ) : null}
+        <ReUsableStreamList
+            handleRefresh={handleRefresh}
+            streams={data}
+            lastUpdated={lastUpdated}
+            isFetching={isFetching}
+        />
     </Container>
 }
