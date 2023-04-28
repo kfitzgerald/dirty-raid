@@ -9,22 +9,45 @@ Features:
 - **OBS Dock** – Add this app as a custom browser dock to have a seamless stream experience.
 - **No Typos** – Never worry about a channel name typo again, just click the big red button to raid!
 - **Real Time** – The app refreshes automatically (every 15s) so you'll always have the latest status.
-- **Sorting** – Sort your followed channels by name, viewer count, uptime and more! 
+- **Sorting** – Sort your followed channels by name, viewer count, uptime and more!
+- **[RaidPal integration](https://raidpal.com/)** – See how many raiders are arriving, check your raid target is online, uptime and more!
+- **Twitch Teams integration** – See your live teammates from any of your teams.
+- **Raid Announcements** – Post an announcement in chat when you start a raid to let any stragglers know where you are going.
+- **Raid Roulette** – Can't decide who to raid? No problem, pick one at random.
 
-> Coming soon: [RaidPal](https://raidpal.com) integration! Flawlessly raid out on RaidPal events. 
 
 ## Screenshots
 
-By default, stream title and tags are visible:
-![](docs/screenshot-list-full.png)
+By default, stream title, tags and profile pics are visible, but can be toggled for a more condensed list:
 
-Optionally, turn off the info to get a condensed list:
-![](docs/screenshot-list-min.png)
+![](docs/screenshot-followed-channels.png) ![](docs/screenshot-followed-channels-collapsed-view.png)
+
+Can't decide? Select Raid Roulette at the bottom of the list to choose a random followed channel:
+
+![](docs/screenshot-raid-roulette.png)
+
+If you are a member of a Twitch Team, the Teams tab will be available with your live team members:
+
+![](docs/screenshot-teams-tab.png)
+
+The [RaidPal](https://raidpal.com/) tab shows the events you have joined and the full lineup in your local timezone:
+> You'll also be reminded you are not following fellow event channels. Support your event lineup!
+
+![](docs/screenshot-raidpal-tab.png) ![](docs/screenshot-raidpal-tab-not-following.png)
 
 Select a channel to see the stream info and push the big red button to start the raid!
-![](docs/screenshot-stream.png)
+> Enable the Post chat message option to customize and post a message in your chat for those that may miss the raid: 
 
-After starting the raid, you can cancel for up to 90 seconds or until the raid is executed from the Twitch UX.
+![](docs/screenshot-raid-modal.png) ![](docs/screenshot-raid-modal-with-message.png)
+
+When enabled, the message will appear in your chat as an announcement. You can even use emotes of channels you are subscribed to!
+
+![](docs/screenshot-chat-announcement.png) ![](docs/screenshot-chat-emotes.png)
+
+> Use the placeholders `{Target}` for the channel's display name, and `{target}` for their regular name.
+
+After starting the raid, you can cancel for up to 90 seconds, or until the raid is executed from the Twitch UX.
+
 ![](docs/screenshot-cancel.png)
 
 > Note: The Twitch API limits you to no more than 10 raids in a 10-minute window. Be decisive with your raids!
@@ -42,6 +65,14 @@ Add the app as a custom dock to OBS:
 
 Have some ideas, feedback, or want to add some features? Hit me up on Discord, open an issue, or fire a PR this way!
 
+# Contributors
+- [Dirtybriefs](https://twitch.tv/dirtybriefs) 
+- [PoddersDJ](https://twitch.tv/poddersdj)
+- [VlastimilVibes](https://twitch.tv/vlastimilvibes)
+
+# Attributions
+
+Roulette image © Ralf Roletschek, Ralf Roletschek creator QS:P170,Q15080600, 13-02-27-spielbank-wiesbaden-by-RalfR-094, cropping by DirtyRaid, CC BY-SA 3.0
 
 # Toolchain
 

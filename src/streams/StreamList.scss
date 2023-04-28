@@ -163,6 +163,7 @@ a {
 }
 
 .stream-list {
+  margin-bottom: calc(var(--bs-gutter-x) * 0.5);
 
   border-top: solid 1px #4b4d55;
 
@@ -321,6 +322,28 @@ a {
     }
     div {
       font-size: .9em;
+    }
+  }
+
+  .chat-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .btn {
+      color: #bf94ff;
+    }
+  }
+
+  textarea.form-control,
+  input.form-control {
+    background-color: #474b4f;
+    color: white;
+    font-size: .9em;
+
+    &:focus {
+      color: white;
+      border-color: #bf94ff;
     }
   }
 

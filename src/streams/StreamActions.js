@@ -129,7 +129,7 @@ export function receiveRaidStartError(error) {
 export function fetchRaidStart(to_broadcaster_id, callback=() => {}) {
     return (dispatch, getState) => {
         const { session, streams } = getState();
-        if (streams.isFetching) return; // no dup requests
+        if (streams.raid.isFetching) return; // no dup requests
         if (!session.data) return; // no auth, no request
 
         const { user_id } = session.data
@@ -150,6 +150,79 @@ export function fetchRaidStart(to_broadcaster_id, callback=() => {}) {
                 }
 
                 dispatch(receiveRaidStartError(err));
+                callback(err);
+            })
+        ;
+    };
+}
+
+//endregion
+
+//region Post Chat Announcement
+
+export const REQUEST_CHAT_ANNOUNCEMENT = 'REQUEST_CHAT_ANNOUNCEMENT';
+export function requestChatAnnouncement() {
+    return {
+        type: REQUEST_CHAT_ANNOUNCEMENT,
+    };
+}
+
+export const RECEIVE_CHAT_ANNOUNCEMENT_SUCCESS = 'RECEIVE_CHAT_ANNOUNCEMENT_SUCCESS';
+export function requestChatAnnouncementSuccess(data) {
+    return {
+        type: RECEIVE_CHAT_ANNOUNCEMENT_SUCCESS,
+        lastUpdated: Date.now(),
+        data
+    };
+}
+
+export const RECEIVE_CHAT_ANNOUNCEMENT_ERROR = 'RECEIVE_CHAT_ANNOUNCEMENT_ERROR';
+export function receiveChatAnnouncementError(error) {
+    return {
+        type: RECEIVE_CHAT_ANNOUNCEMENT_ERROR,
+        error
+    };
+}
+
+/**
+ * Post an announcement to the channel
+ * @param message
+ * @param color
+ * @param [callback]
+ * @return {(function(*, *): void)|*}
+ */
+export function postChannelMessage(message, color, callback=() => {}) {
+    return (dispatch, getState) => {
+        const { session, streams } = getState();
+        if (streams.announcement.isFetching) return; // no dup requests
+        if (!session.data) return; // no auth, no request
+
+        const { user_id } = session.data;
+        const { access_token } = session.token;
+
+        dispatch(requestChatAnnouncement());
+
+        apiPost('https://api.twitch.tv/helix/chat/announcements', {
+            query: {
+                broadcaster_id: user_id,
+                moderator_id: user_id,
+                message,
+                color
+            },
+            bearer: access_token
+        })
+            .then(body => {
+                dispatch(requestChatAnnouncementSuccess(body.data))
+                callback(null, body.data);
+            }, err => {
+
+                // If twitch auth fails - it's likely due to an expired token
+                // Clear the session!
+                if (err.status === 401) {
+                    dispatch(revokeToken());
+                }
+
+                dispatch(receiveChatAnnouncementError(err));
                 callback(err);
             })
         ;

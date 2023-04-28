@@ -67,6 +67,22 @@
 .event {
   h2 {
     padding: 0 0.25em;
+    display: flex;
+
+    span {
+      flex-grow: 1;
+    }
+
+    a {
+      flex-shrink: 0;
+      color: #bf94ff;
+
+      img {
+        height: calc(1.325rem + 0.9vw);
+        width: auto;
+        padding-left: 0.5em;
+      }
+    }
   }
 
   .description {
@@ -87,6 +103,7 @@
     padding: 0.5em 0;
     cursor: pointer;
     width: 100%;
+    padding-left: 0.5em;
 
     &:hover {
       background-color: darken(#282c34, 15%);
@@ -133,6 +150,18 @@
       white-space: nowrap;
       align-self: normal;
       margin-left: 0.5em;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-end;
+
+      .viewers {
+        font-size: .8rem;
+
+        i {
+          color: white;
+        }
+      }
     }
 
 

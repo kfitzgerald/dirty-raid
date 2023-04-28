@@ -1,13 +1,12 @@
 import {APP_CRASH, SET_PREFERENCE} from "./AppActions";
 
+import {DEFAULT_PREFERENCES} from "../common/Constants";
+
 export const initialState = {
     version: process.env.REACT_APP_VERSION,
     appCrashed: false,
     preferences: {
-        showTitles: true,
-        showTags: true,
-        showProfileImg: true,
-        showAmPm: true
+        ...DEFAULT_PREFERENCES,
     }
 };
 

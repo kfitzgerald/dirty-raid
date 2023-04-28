@@ -1,4 +1,5 @@
 import {apiGet, apiPost, CLIENT_ID} from "../common/API";
+import {REQUIRED_SCOPES} from "../common/Constants";
 
 //region Validate Token
 
@@ -46,6 +47,18 @@ export function fetchTokenValidate(callback=() => {}) {
         dispatch(requestTokenValidate());
         apiGet('https://id.twitch.tv/oauth2/validate', { oauth: access_token, clientId: null })
             .then(body => {
+
+                // Verify that all the scopes we require are present
+                let scopes = new Set(body.scopes);
+                for (let scope of REQUIRED_SCOPES) {
+                    if (!scopes.has(scope)) {
+                        // Scope is not present - treat as logged out
+                        dispatch(receiveTokenValidateError('App has been updated and requires you to login with Twitch again.'));
+                        dispatch(revokeToken());
+                        return;
+                    }
+                }
+
                 dispatch(requestTokenValidateSuccess(body));
                 callback(null, body);
             }, err => {
