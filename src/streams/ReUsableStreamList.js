@@ -10,7 +10,6 @@ import {TimeDuration} from "./TimeDuration";
 import StreamInfoModal from "./StreamInfoModal";
 import {REFRESH_INTERVAL} from "./StreamList";
 
-
 function ReUsableStreamList({streams, lastUpdated, isFetching, handleRefresh}) {
 
     const dispatch = useDispatch();
@@ -50,7 +49,7 @@ function ReUsableStreamList({streams, lastUpdated, isFetching, handleRefresh}) {
     }, [setSelectedStream, setSelectedStreamUserId, setShowModal]);
 
     const handleFeelingLucky = useCallback(() => {
-        if(streams?.length) {
+        if (streams?.length) {
             const randomStream = streams[Math.floor(Math.random()*streams.length)];
             setSelectedStream(randomStream.id);
             setSelectedStreamUserId(randomStream.user_id);
@@ -132,36 +131,6 @@ function ReUsableStreamList({streams, lastUpdated, isFetching, handleRefresh}) {
         </div>
         <div className="stream-list">
             {
-                streams?.length > 2 ? (
-                    <div className="stream" onClick={handleFeelingLucky}>
-                        <div className="info-container">
-                            {showProfileImg && (
-                                <div className="profile-container">
-                                    <img src={'/roulette.jpg'} alt="" />
-                                </div>
-                            )}
-                            <div className="stream-info">
-                                <Row className="whodis">
-                                    <Col>
-                                        <div className="d-flex justify-content-between">
-                                            <div className="flex-grow-1 user-name"><span>Raid Roulette?</span></div>
-                                            <div className="flex-grow-0 participation">
-
-                                            </div>
-                                        </div>
-                                    </Col>
-                                </Row>
-                                {showTitles && (
-                                    <Row>
-                                        <Col className="title">Choose a random raid target.</Col>
-                                    </Row>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                ) : null
-            }
-            {
                 Boolean(streams?.length) && streamList.map((stream, i) => {
                     const profile = userCache[stream.user_id];
                     return (
@@ -209,6 +178,36 @@ function ReUsableStreamList({streams, lastUpdated, isFetching, handleRefresh}) {
                         </div>
                     );
                 })
+            }
+            {
+                streams?.length > 2 ? (
+                    <div className="stream" onClick={handleFeelingLucky}>
+                        <div className="info-container">
+                            {showProfileImg && (
+                                <div className="profile-container">
+                                    <img src={'/roulette.jpg'} alt="" />
+                                </div>
+                            )}
+                            <div className="stream-info">
+                                <Row className="whodis">
+                                    <Col>
+                                        <div className="d-flex justify-content-between">
+                                            <div className="flex-grow-1 user-name"><span>Raid Roulette</span></div>
+                                            <div className="flex-grow-0 participation">
+
+                                            </div>
+                                        </div>
+                                    </Col>
+                                </Row>
+                                {showTitles && (
+                                    <Row>
+                                        <Col className="title">Select a channel at random.</Col>
+                                    </Row>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                ) : null
             }
             {!streamList.length && (
                 <div className="no-streams">

@@ -33,7 +33,7 @@ export default function TeamsView() {
     const handleTeamChange = useCallback((teamId) => {
         setSelectedTeamId(teamId);
         dispatch(fetchTeamMembers(teamId, (err, team) => {
-            if(team) {
+            if (team) {
                 const { uniqueIds} =  getTeamUserIds(team[0], user_id);
                 dispatch(fetchTeamStreams(uniqueIds));
             }
@@ -43,7 +43,7 @@ export default function TeamsView() {
     const handleRefresh = useCallback(() => {
         if (selectedTeamId) {
             dispatch(fetchTeamMembers(selectedTeamId, (err, team) => {
-                if(team) {
+                if (team) {
                     const { uniqueIds} =  getTeamUserIds(team[0], user_id);
                     dispatch(fetchTeamStreams(uniqueIds));
                 }
@@ -64,13 +64,13 @@ export default function TeamsView() {
 
     useEffect(() => {
         dispatch(fetchUsersTeams((err, data) => {
-            if(data?.length) {
+            if (data?.length) {
                 handleTeamChange(data[0].id)
             }
         }));
     },[dispatch, handleTeamChange])
 
-    if(!isTeamsFetching && !teamStreamData) {
+    if (!isTeamsFetching && !teamStreamData) {
         // the tab shouldn't be shown if there are no teams so no need to render anything
         return null
 
@@ -86,7 +86,7 @@ export default function TeamsView() {
             <label>Your Teams</label>
         </div>
 
-        {!isTeamsFetching && teamStreamData ? (
+        {(!isTeamsFetching && teamStreamData) ? (
             <>
                 <Nav activeKey={selectedTeamId} className="flex-column event-list mb-3" onSelect={handleTeamChange}>
                     {!teamsData?.length ? (
@@ -108,7 +108,7 @@ export default function TeamsView() {
                     {selectedTeam?.info}
                 </ShowMoreText>
                 <hr />
-                {!teamStreamData?.length && !isStreamsFetching ? (
+                {(!teamStreamData?.length && !isStreamsFetching) ? (
                     <div className="no-streams">
                         <Alert variant="warning">That's weird, none of your team members are online :(</Alert>
                     </div>

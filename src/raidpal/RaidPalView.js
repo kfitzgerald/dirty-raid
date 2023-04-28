@@ -14,6 +14,7 @@ import {REFRESH_INTERVAL} from "../streams/StreamList";
 import {setPreference} from "../app/AppActions";
 import StreamInfoModal from "../streams/StreamInfoModal";
 import {CondensedFormatter} from "../common/PrettyNumber";
+import RaidPalLogo from "../raidpal-logo.svg";
 
 const RAIDPAL_REFRESH_INTERVAL = 900000; // 15 min
 
@@ -21,7 +22,7 @@ function getCondensedTimeTable(event) {
     const unique = [];
     const { time_table: slots, slot_duration_mins } = event;
 
-    for(let endtime, i = 0; i < slots.length; i++) {
+    for (let endtime, i = 0; i < slots.length; i++) {
         endtime = Moment.utc(slots[i].starttime).add(slot_duration_mins, 'minutes').toISOString();
         if (i === 0) {
             unique.push(slots[i]);
@@ -200,7 +201,7 @@ export default function RaidPalView() {
             )}
             {selectedEvent && (
                 <div className="event">
-                    <Nav.Link target="_blank" href={selectedEvent.raidpal_link}><h2>{selectedEvent.title}</h2></Nav.Link>
+                    <h2><span>{selectedEvent.title}</span><a title="View on RaidPal" target="_blank" rel="noreferrer" href={selectedEvent.raidpal_link}><img src={RaidPalLogo} alt="View on RaidPal" /></a></h2>
                     <ShowMoreText lines={3} className="description mb-3">
                         {selectedEvent.description}
                     </ShowMoreText>
@@ -247,13 +248,12 @@ export default function RaidPalView() {
                                         </div>
                                     </div>
                                     <div className="stream-status">
-                                        <span>
                                             {userBadge}
-                                            {currentLiveStream && <Badge bg="danger">Live</Badge>}
-                                        </span>
-                                        {currentLiveStream && <span className="viewers"><i className="bi bi-eye-fill"/> {
-                                            CondensedFormatter(currentLiveStream.viewer_count, 0)}
-                                        </span>}
+                                            {currentLiveStream && <Badge bg="danger">
+                                                <span className="viewers white">{ currentLiveStream.viewer_count > 1 ? <><i className="bi bi-eye-fill  "/> {
+                                                    CondensedFormatter(currentLiveStream.viewer_count, 0)
+                                                }</> : 'Live'}
+                                        </span></Badge>}
                                     </div>
                                 </div>
                             );

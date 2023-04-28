@@ -1,13 +1,10 @@
-
 import {Alert, Container} from "react-bootstrap";
 import {useDispatch, useSelector} from "react-redux";
 import ReUsableStreamList from "../streams/ReUsableStreamList";
 import {useCallback} from "react";
 import {fetchFollowedStreams} from "../streams/StreamActions";
 
-
 export default function FollowersView() {
-
     const dispatch = useDispatch();
 
     const streams = useSelector(state => state.streams);
@@ -16,7 +13,6 @@ export default function FollowersView() {
     const handleRefresh = useCallback(() => {
         dispatch(fetchFollowedStreams());
     }, [dispatch]);
-
 
     return <Container>
         {lastError && (

@@ -1,5 +1,5 @@
 import {apiGet} from "../common/API";
-import {sliceIntoChunks} from '../common/utils'
+import {sliceIntoChunks} from '../common/Utils'
 import {
     revokeToken
 } from "../session/SessionActions";
@@ -35,8 +35,8 @@ export function receiveUsersTeamsError(error) {
 export function fetchUsersTeams(callback = () => {}) {
     return async (dispatch, getState) => {
         const { teams, session } = getState();
-        if(teams.isFetching) return;
-        if(!session.data) return;
+        if (teams.isFetching) return;
+        if (!session.data) return;
 
         const { user_id } = session.data;
         const { access_token } = session.token;
@@ -45,7 +45,7 @@ export function fetchUsersTeams(callback = () => {}) {
         const query = {broadcaster_id: user_id}
         apiGet(`https://api.twitch.tv/helix/teams/channel`, {query, bearer: access_token})
             .then(body => {
-                if(body?.data) {
+                if (body?.data) {
                     dispatch(requestUsersTeamsSuccess(body.data));
                     callback(null, body.data);
                 } else {
@@ -97,7 +97,7 @@ export function fetchTeamMembers(team_id, callback = () => {}) {
 
         apiGet('https://api.twitch.tv/helix/teams', { query, bearer: access_token})
             .then(body => {
-                if(body?.data) {
+                if (body?.data) {
                     dispatch(receiveTeamDataSuccess(body.data));
                     callback(null, body.data);
                 } else {

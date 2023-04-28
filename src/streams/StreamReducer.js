@@ -26,6 +26,14 @@ const initialState = {
         lastError: null,
         lastUpdated: null, // cancel can occur up to 90s after started
         data: null,
+    },
+
+    // State for posting a chat announcement
+    announcement: {
+        isFetching: false,
+        lastError: null,
+        lastUpdated: null,
+        data: null,
     }
 };
 

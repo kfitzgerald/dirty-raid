@@ -6,12 +6,15 @@ import Moment from "moment";
 import {useCallback} from "react";
 import {fetchRaidStart, fetchRaidStop, postChannelMessage} from "./StreamActions";
 import ShowMoreText from "react-show-more-text";
-import useLocalStorage from '../hooks/useLocalStorage'
+import {setPreference} from "../app/AppActions";
+import {Countdown} from "./Countdown";
+import {DEFAULT_PREFERENCES} from "../common/Constants";
 
 
 export default function StreamInfoModal({ selectedStream, selectedUserId, lastUpdated, showModal, handleCloseModal }) {
     const dispatch = useDispatch();
-    const [raidChatMessage, setRaidChatMessage] = useLocalStorage('raidChatMessage', {});
+
+    const {raidChatMessageEnabled, raidChatMessage} = useSelector(state => state.app.preferences);
     const userCache = useSelector(state => state.users.cache);
     const { user_id } = useSelector(state => state.session.data);
     const streams = useSelector(state => state.streams);
@@ -19,13 +22,17 @@ export default function StreamInfoModal({ selectedStream, selectedUserId, lastUp
     const { isFetching: isRaidFetching, /*isCancelled, lastError: raidLastError,*/ lastUpdated: raidStartedAt } = raid;
 
     const handleRaidStart = useCallback(() => {
-        // console.log('DO THE RAID', selectedStream.user_id);
-        if(raidChatMessage?.enabled) {
-            const chatMessage = raidChatMessage?.message.replace(/{target}/g, selectedStream.user_login)
+        // Only send if enabled and the user provided a message
+        if (raidChatMessageEnabled && raidChatMessage?.trim()) {
+            const chatMessage = raidChatMessage
+                .trim()
+                .replace(/{Target}/g, selectedStream.user_name)
+                .replace(/{target}/g, selectedStream.user_login)
+                .substring(0, 500);
             dispatch(postChannelMessage(chatMessage, 'green', () => {}))
         }
         dispatch(fetchRaidStart(selectedStream.user_id));
-    }, [dispatch, selectedStream, raidChatMessage?.message, raidChatMessage?.enabled]);
+    }, [dispatch, selectedStream, raidChatMessageEnabled, raidChatMessage]);
 
     const handleRaidStop = useCallback(() => {
         dispatch(fetchRaidStop());
@@ -40,28 +47,18 @@ export default function StreamInfoModal({ selectedStream, selectedUserId, lastUp
 
     const selectedUser = userCache[selectedStream?.user_id || selectedUserId];
 
-    if(raidChatMessage?.message === undefined) {
-        setRaidChatMessage({
-            enabled: true,
-            message: 'Thanks for watching! we are now raiding over to {target} if the raid should fail, please click here: twitch.tv/{target}'
-        });
-    }
+    const handleToggleRaidMessage = useCallback((e) => {
+        dispatch(setPreference('raidChatMessageEnabled', e.target.checked));
+    }, [dispatch]);
 
-    const handlePostChatChange = useCallback((e) => {
-        const checked = e.target.checked;
-        setRaidChatMessage({
-            ...raidChatMessage,
-            ...{enabled: checked}
-        })
-    }, [raidChatMessage, setRaidChatMessage]);
+    const handleResetRaidMessage = useCallback(() => {
+        dispatch(setPreference('raidChatMessage', DEFAULT_PREFERENCES.raidChatMessage));
+    }, [dispatch]);
 
-    const handlePostChatMessageChange = useCallback((e) => {
+    const handleRaidMessageChange = useCallback((e) => {
         const message = e.target.value;
-        setRaidChatMessage({
-            ...raidChatMessage,
-            ...{message: message}
-        })
-    }, [raidChatMessage, setRaidChatMessage]);
+        dispatch(setPreference('raidChatMessage', message));
+    }, [dispatch]);
 
     return (
         <Modal show={showModal} onHide={handleCloseModal} size="lg" centered className="stream-modal">
@@ -104,19 +101,21 @@ export default function StreamInfoModal({ selectedStream, selectedUserId, lastUp
                         </Row>
                         <Row>
                             <Col className="chat-toggle">
-                                <Form.Check type="switch" id="show-title" label="Post chat message" checked={raidChatMessage?.enabled} onChange={handlePostChatChange} />
+                                <Form.Check type="switch" id="show-title" label="Post chat message" checked={raidChatMessageEnabled} onChange={handleToggleRaidMessage} />
+                                {raidChatMessageEnabled && <Button variant="link" onClick={handleResetRaidMessage}>Reset</Button>}
                             </Col>
                         </Row>
-                        {raidChatMessage?.enabled ? (
+                        {raidChatMessageEnabled ? (
                             <Row>
                                 <Col className="chat-message">
                                     <Form.Control
                                         as="textarea"
                                         bg="secondary"
                                         placeholder="The variable {target} will be replaced with the target channel name..."
-                                        style={{ height: '70px' }}
-                                        onChange={handlePostChatMessageChange}
-                                        value={raidChatMessage?.message}
+                                        rows={3}
+                                        maxLength={500}
+                                        onChange={handleRaidMessageChange}
+                                        value={raidChatMessage}
                                     />
                                 </Col>
                             </Row>
@@ -151,7 +150,7 @@ export default function StreamInfoModal({ selectedStream, selectedUserId, lastUp
                 <div className="flex-grow-1" />
                 {selectedStream && (selectedStream.user_id !== user_id) && (
                     isRaiding ? (
-                        <Button disabled={isRaidFetching} variant="warning" onClick={handleRaidStop}>Cancel Raid</Button>
+                        <Button disabled={isRaidFetching} variant="warning" onClick={handleRaidStop}>Cancel Raid (<Countdown to={Moment(raidStartedAt).add(90, 'seconds').valueOf()} />) </Button>
                     ) : (
                         <Button disabled={isRaidFetching} variant="danger" onClick={handleRaidStart}>Raid Now</Button>
                     )

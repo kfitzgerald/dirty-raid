@@ -7,11 +7,7 @@ import {useEffect} from "react";
 import {Alert} from "react-bootstrap";
 import StreamList from "../streams/StreamList";
 
-// Auth: see https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/#implicit-grant-flow
-// Scopes we need:
-// - user:read:follows                  -> so we can see live followed channels
-// - channel:manage:raids               -> so we can start/stop raids
-// - moderator:manage:announcements     -> so we can send messages to chat
+import {REQUIRED_SCOPES} from "../common/Constants";
 
 function cleanURL() {
     window.history.replaceState("", document.title, window.location.pathname);
@@ -75,7 +71,7 @@ function App() {
     oauthParams.set('force_verify', 'false')
     oauthParams.set('redirect_uri', window.location.href.split('?')[0])
     oauthParams.set('response_type', 'token');
-    oauthParams.set('scope', 'user:read:follows channel:manage:raids moderator:manage:announcements');
+    oauthParams.set('scope', REQUIRED_SCOPES.join(' '));
     oauthParams.set('state', ':)')
 
     return (
