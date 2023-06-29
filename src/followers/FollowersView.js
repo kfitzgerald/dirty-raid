@@ -3,6 +3,7 @@ import {useDispatch, useSelector} from "react-redux";
 import ReUsableStreamList from "../streams/ReUsableStreamList";
 import {useCallback} from "react";
 import {fetchFollowedStreams} from "../streams/StreamActions";
+import ErrorMessage from "../common/ErrorMessage";
 
 export default function FollowersView() {
     const dispatch = useDispatch();
@@ -17,7 +18,7 @@ export default function FollowersView() {
     return <Container>
         {lastError && (
             <Alert variant="danger">
-                {lastError.error_description || lastError.error || lastError}
+                <ErrorMessage error={lastError} />
             </Alert>
         )}
 

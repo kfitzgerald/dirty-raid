@@ -8,6 +8,7 @@ import {Alert} from "react-bootstrap";
 import StreamList from "../streams/StreamList";
 
 import {REQUIRED_SCOPES} from "../common/Constants";
+import ErrorMessage from "../common/ErrorMessage";
 
 function cleanURL() {
     window.history.replaceState("", document.title, window.location.pathname);
@@ -79,7 +80,7 @@ function App() {
             <div className="App-header">
                 {lastError ? (
                     <Alert variant="danger">
-                        {lastError.error_description || lastError.error || lastError}
+                        <ErrorMessage error={lastError} />
                     </Alert>
                 ) : (
                     <img src={logo} className="App-logo" alt="logo" />

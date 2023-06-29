@@ -15,6 +15,7 @@ import {setPreference} from "../app/AppActions";
 import StreamInfoModal from "../streams/StreamInfoModal";
 import {CondensedFormatter} from "../common/PrettyNumber";
 import RaidPalLogo from "../raidpal-logo.svg";
+import ErrorMessage from "../common/ErrorMessage";
 
 const RAIDPAL_REFRESH_INTERVAL = 900000; // 15 min
 
@@ -161,7 +162,7 @@ export default function RaidPalView() {
         <Container>
             {lastError && (
                 <Alert variant="danger" className="mt-3">
-                    {lastError.error_description || lastError.error || lastError}
+                    <ErrorMessage error={lastError} />
                 </Alert>
             )}
             <div className="display-opts">
@@ -191,12 +192,12 @@ export default function RaidPalView() {
             ) : null) }
             {eventLastError && (
                 <Alert variant="danger" className="mt-3">
-                    {eventLastError.error_description || eventLastError.error || eventLastError}
+                    <ErrorMessage error={eventLastError} />
                 </Alert>
             )}
             {streamLastError && (
                 <Alert variant="danger" className="mt-3">
-                    {streamLastError.error_description || streamLastError.error || streamLastError}
+                    <ErrorMessage error={streamLastError} />
                 </Alert>
             )}
             {selectedEvent && (

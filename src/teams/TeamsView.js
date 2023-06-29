@@ -6,6 +6,7 @@ import ReUsableStreamList from "../streams/ReUsableStreamList";
 import ShowMoreText from "react-show-more-text";
 import {REFRESH_INTERVAL} from "../streams/StreamList";
 import "./TeamsView.scss";
+import ErrorMessage from "../common/ErrorMessage";
 
 
 function getTeamUserIds(team, user_id) {
@@ -79,7 +80,7 @@ export default function TeamsView() {
     return <Container>
         {teamsLastError && (
             <Alert variant="danger" className="mt-3">
-                {teamsLastError.error_description || teamsLastError.error || teamsLastError}
+                <ErrorMessage error={teamsLastError} />
             </Alert>
         )}
         <div className="display-opts">
@@ -125,7 +126,7 @@ export default function TeamsView() {
         ) : null}
         {teamsLastError && (
             <Alert variant="danger" className="mt-3">
-                {teamsLastError.error_description || teamsLastError.error || teamsLastError}
+                <ErrorMessage error={teamsLastError} />
             </Alert>
         )}
 
