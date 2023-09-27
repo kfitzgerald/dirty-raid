@@ -7,6 +7,7 @@ import ShowMoreText from "react-show-more-text";
 import {REFRESH_INTERVAL} from "../streams/StreamList";
 import "./TeamsView.scss";
 import ErrorMessage from "../common/ErrorMessage";
+import {fetchUsers} from "../users/UserActions";
 
 
 function getTeamUserIds(team, user_id) {
@@ -36,7 +37,16 @@ export default function TeamsView() {
         dispatch(fetchTeamMembers(teamId, (err, team) => {
             if (team) {
                 const { uniqueIds} =  getTeamUserIds(team[0], user_id);
-                dispatch(fetchTeamStreams(uniqueIds));
+                dispatch(fetchTeamStreams(uniqueIds, (err, streamList) => {
+                    if (streamList) {
+                        const uniqueIds = Array.from(
+                            new Set(streamList.filter(s => s.user_id !== user_id).map(s => s.user_id))
+                        );
+
+                        // Fetch channel info
+                        dispatch(fetchUsers(uniqueIds));
+                    }
+                }));
             }
         }));
     }, [dispatch, user_id]);
@@ -46,7 +56,16 @@ export default function TeamsView() {
             dispatch(fetchTeamMembers(selectedTeamId, (err, team) => {
                 if (team) {
                     const { uniqueIds} =  getTeamUserIds(team[0], user_id);
-                    dispatch(fetchTeamStreams(uniqueIds));
+                    dispatch(fetchTeamStreams(uniqueIds, (err, streamList) => {
+                        if (streamList) {
+                            const uniqueIds = Array.from(
+                                new Set(streamList.filter(s => s.user_id !== user_id).map(s => s.user_id))
+                            );
+
+                            // Fetch channel info
+                            dispatch(fetchUsers(uniqueIds));
+                        }
+                    }));
                 }
             }));
         }

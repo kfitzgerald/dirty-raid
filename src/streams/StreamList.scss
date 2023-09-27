@@ -273,8 +273,22 @@ a {
   }
 
   .modal-header {
+    flex-wrap: nowrap;
+
+    .modal-title{
+      align-items: center;
+      //display: flex;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
     .btn-close {
       filter: invert(1);
+    }
+
+    .copy-channel-button {
+      color: #8a8e97;
     }
   }
 

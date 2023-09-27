@@ -9,6 +9,7 @@ import ShowMoreText from "react-show-more-text";
 import {setPreference} from "../app/AppActions";
 import {Countdown} from "./Countdown";
 import {DEFAULT_PREFERENCES} from "../common/Constants";
+import CopyButton from "../common/CopyButton";
 
 
 export default function StreamInfoModal({ selectedStream, selectedUserId, lastUpdated, showModal, handleCloseModal }) {
@@ -60,14 +61,19 @@ export default function StreamInfoModal({ selectedStream, selectedUserId, lastUp
         dispatch(setPreference('raidChatMessage', message));
     }, [dispatch]);
 
+    const displayName = selectedStream?.user_name || selectedUser?.display_name;
+
     return (
         <Modal show={showModal} onHide={handleCloseModal} size="lg" centered className="stream-modal">
             <Modal.Header closeButton>
                 <Modal.Title id="stuffs">
                     {selectedUser && selectedUser.broadcaster_type === 'partner' &&
                         <i className="bi bi-patch-check-fill partner"/>}
-                    {selectedStream?.user_name || selectedUser?.display_name || 'Streamer Offline!'}
+                    {displayName || 'Streamer Offline!'}
                 </Modal.Title>
+                <CopyButton disabled={!displayName} value={displayName} variant="link" className="copy-channel-button">
+                    <i className="bi bi-clipboard"></i>
+                </CopyButton>
             </Modal.Header>
             <Modal.Body>
                 {selectedStream ? (
