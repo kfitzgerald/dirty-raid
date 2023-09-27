@@ -1,5 +1,3 @@
-"use strict";
-
 import {Button, Overlay, Tooltip} from "react-bootstrap";
 import propTypes from "prop-types";
 import React, {useEffect, useRef, useState} from "react";
