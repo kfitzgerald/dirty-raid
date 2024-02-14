@@ -4,7 +4,7 @@ import {TimeDuration} from "./TimeDuration";
 import {useDispatch, useSelector} from "react-redux";
 import Moment from "moment";
 import {useCallback} from "react";
-import {fetchRaidStart, fetchRaidStop, postChannelMessage} from "./StreamActions";
+import {fetchRaidStart, fetchRaidStop, postChannelAnnouncement, postChannelMessage} from "./StreamActions";
 import ShowMoreText from "react-show-more-text";
 import {setPreference} from "../app/AppActions";
 import {Countdown} from "./Countdown";
@@ -15,7 +15,7 @@ import CopyButton from "../common/CopyButton";
 export default function StreamInfoModal({ selectedStream, selectedUserId, lastUpdated, showModal, handleCloseModal }) {
     const dispatch = useDispatch();
 
-    const {raidChatMessageEnabled, raidChatMessage} = useSelector(state => state.app.preferences);
+    const {raidChatMessageEnabled, raidChatMessage, raidChatMessageSendAsAnnouncement} = useSelector(state => state.app.preferences);
     const userCache = useSelector(state => state.users.cache);
     const { user_id } = useSelector(state => state.session.data);
     const streams = useSelector(state => state.streams);
@@ -30,10 +30,15 @@ export default function StreamInfoModal({ selectedStream, selectedUserId, lastUp
                 .replace(/{Target}/g, selectedStream.user_name)
                 .replace(/{target}/g, selectedStream.user_login)
                 .substring(0, 500);
-            dispatch(postChannelMessage(chatMessage, 'green', () => {}))
+
+            if (raidChatMessageSendAsAnnouncement) {
+                dispatch(postChannelAnnouncement(chatMessage, 'green', () => {}));
+            } else {
+                dispatch(postChannelMessage(chatMessage, () => {}));
+            }
         }
         dispatch(fetchRaidStart(selectedStream.user_id));
-    }, [dispatch, selectedStream, raidChatMessageEnabled, raidChatMessage]);
+    }, [dispatch, selectedStream, raidChatMessageEnabled, raidChatMessage, raidChatMessageSendAsAnnouncement]);
 
     const handleRaidStop = useCallback(() => {
         dispatch(fetchRaidStop());
@@ -50,6 +55,10 @@ export default function StreamInfoModal({ selectedStream, selectedUserId, lastUp
 
     const handleToggleRaidMessage = useCallback((e) => {
         dispatch(setPreference('raidChatMessageEnabled', e.target.checked));
+    }, [dispatch]);
+
+    const handleToggleRaidMessageMode = useCallback((e) => {
+        dispatch(setPreference('raidChatMessageSendAsAnnouncement', e.target.checked));
     }, [dispatch]);
 
     const handleResetRaidMessage = useCallback(() => {
@@ -107,11 +116,12 @@ export default function StreamInfoModal({ selectedStream, selectedUserId, lastUp
                         </Row>
                         <Row>
                             <Col className="chat-toggle">
-                                <Form.Check type="switch" id="show-title" label="Post chat message" checked={raidChatMessageEnabled} onChange={handleToggleRaidMessage} />
+                                <Form.Check type="switch" id="chat-enable" label="Post chat message" checked={raidChatMessageEnabled} onChange={handleToggleRaidMessage} />
                                 {raidChatMessageEnabled && <Button variant="link" onClick={handleResetRaidMessage}>Reset</Button>}
                             </Col>
                         </Row>
                         {raidChatMessageEnabled ? (
+                            <>
                             <Row>
                                 <Col className="chat-message">
                                     <Form.Control
@@ -125,6 +135,12 @@ export default function StreamInfoModal({ selectedStream, selectedUserId, lastUp
                                     />
                                 </Col>
                             </Row>
+                            <Row>
+                                <Col className="chat-toggle">
+                                    <Form.Check type="switch" id="message-mode" label={<>Send as announcement <span className="fs-small">(not recommended)</span></>} checked={raidChatMessageSendAsAnnouncement} onChange={handleToggleRaidMessageMode} />
+                                </Col>
+                            </Row>
+                            </>
                         ) : null}
 
                     </>

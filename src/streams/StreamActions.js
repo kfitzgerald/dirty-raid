@@ -191,7 +191,7 @@ export function receiveChatAnnouncementError(error) {
  * @param [callback]
  * @return {(function(*, *): void)|*}
  */
-export function postChannelMessage(message, color, callback=() => {}) {
+export function postChannelAnnouncement(message, color, callback=() => {}) {
     return (dispatch, getState) => {
         const { session, streams } = getState();
         if (streams.announcement.isFetching) return; // no dup requests
@@ -223,6 +223,77 @@ export function postChannelMessage(message, color, callback=() => {}) {
                 }
 
                 dispatch(receiveChatAnnouncementError(err));
+                callback(err);
+            })
+        ;
+    };
+}
+
+//endregion
+
+//region Post Chat Message
+
+export const REQUEST_CHAT_MESSAGE = 'REQUEST_CHAT_MESSAGE';
+export function requestChatMessage() {
+    return {
+        type: REQUEST_CHAT_MESSAGE,
+    };
+}
+
+export const RECEIVE_CHAT_MESSAGE_SUCCESS = 'RECEIVE_CHAT_MESSAGE_SUCCESS';
+export function requestChatMessageSuccess(data) {
+    return {
+        type: RECEIVE_CHAT_MESSAGE_SUCCESS,
+        lastUpdated: Date.now(),
+        data
+    };
+}
+
+export const RECEIVE_CHAT_MESSAGE_ERROR = 'RECEIVE_CHAT_MESSAGE_ERROR';
+export function receiveChatMessageError(error) {
+    return {
+        type: RECEIVE_CHAT_MESSAGE_ERROR,
+        error
+    };
+}
+
+/**
+ * Post an announcement to the channel
+ * @param message
+ * @param [callback]
+ * @return {(function(*, *): void)|*}
+ */
+export function postChannelMessage(message, callback=() => {}) {
+    return (dispatch, getState) => {
+        const { session, streams } = getState();
+        if (streams.announcement.isFetching) return; // no dup requests
+        if (!session.data) return; // no auth, no request
+
+        const { user_id } = session.data;
+        const { access_token } = session.token;
+
+        dispatch(requestChatMessage());
+
+        apiPost('https://api.twitch.tv/helix/chat/messages', {
+            payload: {
+                broadcaster_id: user_id,
+                sender_id: user_id,
+                message,
+            },
+            bearer: access_token
+        })
+            .then(body => {
+                dispatch(requestChatMessageSuccess(body.data))
+                callback(null, body.data);
+            }, err => {
+
+                // If twitch auth fails - it's likely due to an expired token
+                // Clear the session!
+                if (err.status === 401) {
+                    dispatch(revokeToken());
+                }
+
+                dispatch(receiveChatMessageError(err));
                 callback(err);
             })
         ;

@@ -12,7 +12,7 @@ Features:
 - **Sorting** – Sort your followed channels by name, viewer count, uptime and more!
 - **[RaidPal integration](https://raidpal.com/)** – See how many raiders are arriving, check your raid target is online, uptime and more!
 - **Twitch Teams integration** – See your live teammates from any of your teams.
-- **Raid Announcements** – Post an announcement in chat when you start a raid to let any stragglers know where you are going.
+- **Chat Announcements** – Post a chat message or announcement when you start a raid to let any stragglers know where you are going.
 - **Raid Roulette** – Can't decide who to raid? No problem, pick one at random.
 
 
@@ -40,11 +40,24 @@ Select a channel to see the stream info and push the big red button to start the
 
 ![](docs/screenshot-raid-modal.png) ![](docs/screenshot-raid-modal-with-message.png)
 
-When enabled, the message will appear in your chat as an announcement. You can even use emotes of channels you are subscribed to!
-
-![](docs/screenshot-chat-announcement.png) ![](docs/screenshot-chat-emotes.png)
-
 > Use the placeholders `{Target}` for the channel's display name, and `{target}` for their regular name.
+
+When `Post chat message` is enabled, the message will appear in your chat as a regular message from you.
+
+![](docs/screenshot-chat-message.png) 
+
+By default, it will send as a message as you This enables you to use things like `/me`, use your sub emotes,
+and even use an existing raid out command you might already have:
+
+![](docs/screenshot-raid-modal-message-command.png) ![](docs/screenshot-chat-message-commands.png)
+
+You may optionally enable the `Send as announcement` mode, which will post an announcement instead of a chat message.
+> This is a legacy feature that is no longer recommended. Announcements, like Shoutouts, do not appear in channel history
+> which makes for a poor experience for mobile viewers who are not actively in chat and get lost in the raid. When they
+> return to chat, they may have no idea where the raid went to since the announcement is not persisted.
+
+![](docs/screenshot-chat-announcement.png) 
+
 
 After starting the raid, you can cancel for up to 90 seconds, or until the raid is executed from the Twitch UX.
 
@@ -60,6 +73,64 @@ Add the app as a custom dock to OBS:
 - Enter a name for the dock (e.g. `DirtyRaid`) and the url: `https://raid.dirtybriefs.net`
 - Click `Apply` - the Dock should now appear, likely behind the Custom Browser Docks dialog.
 - Move the dock to where ever you'd like, docking it to OBS or keep it detached for a separate monitor.
+
+# Changelog
+
+### v4.0.0 - 2024-02-14 - Real chat messages!
+- Added toggle to optionally send as announcement (now defaults to chat message)
+> Note: You will need to re-authenticate with Twitch in order to request the chat message permission scope
+
+### v3.2.0 – 2023-09-26
+- Added button to copy channel name in channel modal title (to clipboard)
+- Fixed Teams section not fetching user data (resulted in missing profile images, disabled view channel button)
+- Fixed long channel names pushing the close button off the modal on mobile devices
+
+### v3.1.0 – 2023-06-29
+- Fixed error message rendering issue when oauth tokens expire
+- Updated error messages for consistent messaging
+
+### v3.0.0 – 2023-04-28 – Teams, Roulette, & Announcements
+The vast majority of this release comes from @Podders - Please give a big thanks for the contribution!
+- Added new Teams page, to view your Twitch Teams and the live members
+- Added optional chat announcement on raid, to inform viewers where to head if they get left behind
+- Added Raid Roulette, for when you just can't decide who to raid
+- Added RaidPal logo and link to RaidPal event page
+- Added viewer count to live badge on RaidPal lineup
+- Added countdown timer to the Cancel Raid button to get a better idea when the Raid will actually fire
+- Various UI tweaks and enhancements
+
+> Note: You will need to re-authenticate with Twitch in order to request the announcement permission scope
+
+### v2.0.2 - 2023-04-17
+- Fixed a crash that could occur if the user has no joined events or has not joined RaidPal.
+
+### v2.0.1 - 2023-04-13
+- Changed channel offline message
+
+### v2.0.0 - 2023-04-13 – RaidPal Integration
+- Added RaidPal tab with the user's event list and lineup, as well as the live status of event channels
+- Added follow status badge to event lineup, so you can see who you forgot to follow
+- Added AM/PM-Hundred Hour toggle for RaidPal lineup slot times
+
+### v1.4.0 - 2023-04-06
+- Added button to view channel on channel detail modal
+
+### v1.3.0 - 2023-04-06
+- Added refresh feedback so automatic refresh is more transparent
+- Logged-in user profile image displayed instead of Twitch logo
+- Added handling for long channel names
+
+### v1.2.0 - 2023-04-06
+- Added channel profile pics and information
+- Display preferences are persisted
+- Partner badges are displayed where applicable
+- Added profile pic placeholder when images are not available
+
+### v1.1.0 – 2023-04-04
+- Updated app OBS / documentation link url
+
+### v1.0.0 – 2023-04-04
+- Initial release
 
 # Contributing
 
