@@ -25,16 +25,18 @@ function getCondensedTimeTable(event) {
 
     for (let endtime, i = 0; i < slots.length; i++) {
         endtime = Moment.utc(slots[i].starttime).add(slot_duration_mins, 'minutes').toISOString();
+        slots[i].endtime = endtime;
+
         if (i === 0) {
+            // first slot - add as-is
             unique.push(slots[i]);
-            slots[i].endtime = endtime;
         } else {
             if (slots[i-1].broadcaster_id === slots[i].broadcaster_id) {
                 // same streamer, update end time
-                slots[i-1].endtime = endtime;
+                unique[unique.length-1].endtime = endtime;
             } else {
+                // new streamer, add slot
                 unique.push(slots[i]);
-                slots[i].endtime = endtime;
             }
         }
     }
