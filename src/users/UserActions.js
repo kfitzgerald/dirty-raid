@@ -37,12 +37,12 @@ export function enqueueUsers(user_ids) {
 
 const REFRESH_TIMEOUT = 3600000; // refresh profile data after 1 hour
 
-export function fetchUsers(user_ids, refresh=false) {
+export function fetchUsers(user_ids_or_logins, refresh=false) {
     return async (dispatch, getState) => {
         const { users } = getState();
         const { cache } = users;
         const expiry = Date.now() - REFRESH_TIMEOUT;
-        const filteredIds = refresh ? user_ids : user_ids.filter(id =>
+        const filteredIds = refresh ? user_ids_or_logins : user_ids_or_logins.filter(id => // logins will always refresh
             !cache[id] ||                   // not cached
             !cache[id].lastUpdated ||       // no updated value
             cache[id].lastUpdated < expiry  // expired from cache
@@ -73,13 +73,53 @@ function _fetchUsers(callback=() => {}) {
         // lock out dup fetch requests
         dispatch(requestUsers());
 
+        // Sort queue into ids and logins
+        const idPattern = /^[0-9]+$/;
+        const userIdQueue = [], userLoginQueue = [];
+        queue.forEach(entry => idPattern.test(entry) ? userIdQueue.push(entry) : userLoginQueue.push(entry));
+
+        // Process ids
         let userList = [];
         let ids, body, error, query;
-        while (queue.length > 0) {
+        while (userIdQueue.length > 0) {
 
             // Build query
-            ids = [...new Set(queue.splice(0, 100))]; // batches of 100 max, unique ids
+            ids = [...new Set(userIdQueue.splice(0, 100))]; // batches of 100 max, unique ids
             query = { id: ids };
+
+            // Execute request
+            ({ error, body } = await apiGet('https://api.twitch.tv/helix/users', { query, bearer: access_token})
+                .then(body => {
+                    return { body, error: null };
+                }, error => {
+                    return { error };
+                })
+            );
+
+            // If the request failed, handle it
+            if (error) {
+                // If twitch auth fails - it's likely due to an expired token
+                // Clear the session!
+                if (error.status === 401) {
+                    dispatch(revokeToken());
+                }
+
+                dispatch(receiveUsersError(error));
+                callback(error);
+                return;
+
+            } else {
+                // Append the users to the received list
+                userList = userList.concat(body.data);
+            }
+        }
+
+        // Process logins
+        while (userLoginQueue.length > 0) {
+
+            // Build query
+            ids = [...new Set(userLoginQueue.splice(0, 100))]; // batches of 100 max, unique ids
+            query = { login: ids };
 
             // Execute request
             ({ error, body } = await apiGet('https://api.twitch.tv/helix/users', { query, bearer: access_token})

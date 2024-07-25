@@ -217,3 +217,114 @@ export function fetchUserStreams(user_ids, callback=() => {}) {
 }
 
 //endregion
+
+//region Custom Events
+
+export const SET_CUSTOM_EVENT_DATA = 'SET_CUSTOM_EVENT_DATA';
+export function setCustomEventData(data) {
+    return {
+        type: SET_CUSTOM_EVENT_DATA,
+        lastUpdated: Date.now(),
+        data
+    };
+}
+
+
+//endregion
+
+//region Custom Streams
+
+export const REQUEST_CUSTOM_STREAMS = 'REQUEST_CUSTOM_STREAMS';
+export function requestCustomStreams() {
+    return {
+        type: REQUEST_CUSTOM_STREAMS
+    };
+}
+
+export const RECEIVE_CUSTOM_STREAMS_SUCCESS = 'RECEIVE_CUSTOM_STREAMS_SUCCESS';
+export function requestCustomStreamsSuccess(data) {
+    return {
+        type: RECEIVE_CUSTOM_STREAMS_SUCCESS,
+        lastUpdated: Date.now(),
+        data
+    };
+}
+
+export const RECEIVE_CUSTOM_STREAMS_ERROR = 'RECEIVE_CUSTOM_STREAMS_ERROR';
+export function receiveCustomStreamsError(error) {
+    return {
+        type: RECEIVE_CUSTOM_STREAMS_ERROR,
+        error
+    };
+}
+
+/**
+ * Fetch arbitrary user stream list
+ * @param user_logins
+ * @param callback
+ * @return {(function(*, *): void)|*}
+ */
+export function fetchCustomStreamsByLogin(user_logins, callback=() => {}) {
+    return async (dispatch, getState) => {
+        // allow dup fetch for when user changes event before total fetch is complete since this is not a queued req
+        const { /*raidpal,*/ session } = getState();
+        // const { streams } = raidpal;
+        // if (streams.isFetching) return; // no dup requests
+        if (!session.data) return; // no auth, no request
+
+        const { access_token } = session.token;
+
+        dispatch(requestCustomStreams());
+
+        const queue = [].concat(user_logins);
+        const pageSize = 100;
+        let streamList = [];
+        let logins, done = false, body, error, after, query;
+        while (!done) { // ooo scary!
+
+            // pull a batch of user_logins
+            logins = queue.splice(0, 100);
+
+            // Build query
+            query = { user_login: logins, first: pageSize };
+            if (after) query.after = after;
+
+            // Execute request
+            ({ error, body } = await apiGet('https://api.twitch.tv/helix/streams', { query, bearer: access_token})
+                    .then(body => {
+                        return { body, error: null };
+                    }, error => {
+                        return { error };
+                    })
+            );
+
+            // If the request failed, handle it
+            if (error) {
+                // If twitch auth fails - it's likely due to an expired token
+                // Clear the session!
+                if (error.status === 401) {
+                    dispatch(revokeToken());
+                }
+
+                dispatch(receiveCustomStreamsError(error));
+                callback(error);
+                return
+            } else {
+                // Append the page to the results
+                streamList = streamList.concat(body.data);
+
+                // Check if there is another page to fetch
+                after = body.pagination.cursor;
+                done = !body.pagination.cursor;
+            }
+        }
+
+        // success
+        // dispatch(fetchUsers(streamList.map(s => s.user_id))); // fetch user info
+        dispatch(requestCustomStreamsSuccess(streamList));
+        callback(null, streamList);
+
+    };
+}
+
+//endregion

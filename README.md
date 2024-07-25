@@ -74,7 +74,97 @@ Add the app as a custom dock to OBS:
 - Click `Apply` - the Dock should now appear, likely behind the Custom Browser Docks dialog.
 - Move the dock to where ever you'd like, docking it to OBS or keep it detached for a separate monitor.
 
+## Custom Events
+
+Sometimes you may need to organize an event outside RaidPal for various reasons. With some effort, you can create a
+RaidPal-compatible JSON file containing your event data. 
+
+For example, see [exmaple-custom-event.json](docs%2Fexmaple-custom-event.json), used for the Velvet & Friends MERU 
+fundraiser event.
+
+You can drag and drop the JSON file into DirtyRaid and the Custom event tab will appear, containing the event lineup and 
+stream status.
+
+Alternatively, you can load a custom event by URL using the user dropdown menu. 
+
+> Note: The server you are hosting the JSON from will need to support CORS, and set the CORS header appropriately. 
+
+In the simplest form:
+
+```json
+{
+  "event": {
+    "title": "MERU Summer Fest 2024",
+    "description": "Raising funds for MERU who adapt toys for children with disabilities",
+    "slot_duration_mins": 120,
+    "starttime": "2024-07-02T12:00:00Z",
+    "inconsistent_slot_durations": true,
+    "time_table": [
+      {
+        "order": 0,
+        "starttime": "2024-07-25T09:00:00+01:00",
+        "slot_occupied": true,
+        "broadcaster_display_name": "Markinsutton",
+        "broadcaster_id": null
+      },
+      {
+        "order": 1,
+        "starttime": "2024-07-25T11:00:00+01:00",
+        "slot_occupied": true,
+        "broadcaster_display_name": "Liquid_Bongo",
+        "broadcaster_id": null
+      },
+      {
+        "order": 2,
+        "starttime": "2024-07-25T13:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "Mila_Pietrak",
+        "broadcaster_id": null
+      },
+      {
+        "order": 3,
+        "starttime": "2024-07-25T17:00:00+01:00",
+        "slot_occupied": true,
+        "broadcaster_display_name": "JonGurd",
+        "broadcaster_id": null
+      },
+      {
+        "order": 4,
+        "starttime": "2024-07-25T18:30:00+01:00",
+        "slot_occupied": true,
+        "broadcaster_display_name": "Markinsutton",
+        "broadcaster_id": null
+      }
+    ]
+  }
+}
+```
+
+- Use `"inconsistent_slot_durations": true` to ignore the slot duration, and instead will use the start time of the next
+ slot, when available.
+- `slot_duration_mins` should be the default slot duration in minutes, but when `inconsistent_slot_durations` is enabled, it will only
+  be used for the final slot duration
+- `starttime` should be an ISO compatible timestamp. 
+- `broadcaster_id` is not required. The display_name will be used instead with the Twitch APIs.
+- For empty slots to be filled later, flag `"slot_occupied": false` and `"broadcaster_display_name": ""`
+
+
 # Changelog
+
+### v4.1.0 – 2024-07-25 – Custom events!
+You can now load custom events using the RaidPal event format - Handy for events with arbitrary slot times that don't 
+work within RaidPal, or events not organized using RaidPal.
+
+See the [exmaple-custom-event.json](docs%2Fexmaple-custom-event.json) example for making your own custom event.
+
+- Added ability to drag and drop a JSON event file into DirtyRaid, loading the custom event
+- Added Custom Event modal, accessible from user dropdown
+- Added Custom tab, visible when custom event is loaded. Works the same as RaidPal but does not currently offer nag for 
+  following status
+
+### v4.0.1 – 2024-06-18
+- Fixed issue with RaidPal view showing incorrect end time when artist spans 3 or more adjacent slots
 
 ### v4.0.0 - 2024-02-14 - Real chat messages!
 - Added toggle to optionally send as announcement (now defaults to chat message)

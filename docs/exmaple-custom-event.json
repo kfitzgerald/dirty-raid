@@ -1,0 +1,489 @@
+{
+  "event": {
+    "status": true,
+    "title": "MERU Summer Fest 2024",
+    "description": "Raising funds for MERU who adapt toys for children with disabilities",
+    "slot_duration_mins": 120,
+    "starttime": "2024-07-02T12:00:00Z",
+    "endtime": "2024-08-05T04:00:00Z",
+    "organiser_display_name": "Markinsutton",
+    "organiser_image": null,
+    "organiser_link": "https://twitch.tv/Markinsutton",
+    "organiser_timezone": "UTC",
+    "raidpal_link": null,
+    "event_extlink": null,
+    "inconsistent_slot_durations": true,
+    "time_table": [
+      {
+        "order": 0,
+        "starttime": "2024-07-25T09:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "Markinsutton",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 1,
+        "starttime": "2024-07-25T11:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "Liquid_Bongo",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 2,
+        "starttime": "2024-07-25T13:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "Mila_Pietrak",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 3,
+        "starttime": "2024-07-25T15:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "Mila_Pietrak",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 4,
+        "starttime": "2024-07-25T17:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "JonGurd",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 5,
+        "starttime": "2024-07-25T18:30:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "Markinsutton",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 6,
+        "starttime": "2024-07-25T21:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "DJCTi",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 7,
+        "starttime": "2024-07-25T23:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "TotalRage76",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 8,
+        "starttime": "2024-07-26T01:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "djpsyclone",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 9,
+        "starttime": "2024-07-26T03:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "djpsyclone",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 10,
+        "starttime": "2024-07-26T05:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "atomik_robot",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 11,
+        "starttime": "2024-07-26T06:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "atomik_robot",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 12,
+        "starttime": "2024-07-26T09:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "Mark_Loves_Coffee_",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 13,
+        "starttime": "2024-07-26T11:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "Lee_HughesDJ",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 14,
+        "starttime": "2024-07-26T13:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "Synerje",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 15,
+        "starttime": "2024-07-26T15:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "ViciousCode",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 16,
+        "starttime": "2024-07-26T17:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "ViciousCode",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 17,
+        "starttime": "2024-07-26T18:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "R4csco",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 18,
+        "starttime": "2024-07-26T21:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "TheDJBigD",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 19,
+        "starttime": "2024-07-26T23:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "TheDJBigD",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 20,
+        "starttime": "2024-07-27T01:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "Lindsayfierce",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 21,
+        "starttime": "2024-07-27T03:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "Lindsayfierce",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 22,
+        "starttime": "2024-07-27T05:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "jacinta_wolf_raven1",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 23,
+        "starttime": "2024-07-27T07:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "Mystixa",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 24,
+        "starttime": "2024-07-27T09:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "Mystixa",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 25,
+        "starttime": "2024-07-27T11:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "l_NatasS_l",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 26,
+        "starttime": "2024-07-27T14:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "Drey_Tolosa",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 27,
+        "starttime": "2024-07-27T17:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "Burner71",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 28,
+        "starttime": "2024-07-27T19:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "Houtvlot",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 29,
+        "starttime": "2024-07-27T21:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "DirtyBriefs",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 30,
+        "starttime": "2024-07-27T23:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "DirtyBriefs",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 31,
+        "starttime": "2024-07-28T00:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "JohnRJMusic",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 32,
+        "starttime": "2024-07-28T03:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "MelonMixes",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 33,
+        "starttime": "2024-07-28T05:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "MelonMixes",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 34,
+        "starttime": "2024-07-28T07:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "OnlyTheDetails",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 35,
+        "starttime": "2024-07-28T09:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "DJ_Quick_",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 36,
+        "starttime": "2024-07-28T11:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "DJ_Quick_",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 37,
+        "starttime": "2024-07-28T13:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "andyaspien",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 38,
+        "starttime": "2024-07-28T15:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "Lindsayfierce",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 39,
+        "starttime": "2024-07-28T17:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "OnlyTheDetails",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 40,
+        "starttime": "2024-07-28T19:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "OnlyTheDetails",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 41,
+        "starttime": "2024-07-28T21:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "Pepitojones",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 42,
+        "starttime": "2024-07-28T23:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "briandemodulated",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 43,
+        "starttime": "2024-07-29T01:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "DJWeeRISKY",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 44,
+        "starttime": "2024-07-29T03:00:00+01:00",
+        "slot_occupied": true,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "Fucsiaworld",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 45,
+        "starttime": "2024-07-29T05:00:00+01:00",
+        "slot_occupied": false,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      },
+      {
+        "order": 46,
+        "starttime": "2024-07-29T07:00:00+01:00",
+        "slot_occupied": false,
+        "user_timezone": "UTC",
+        "broadcaster_display_name": "",
+        "broadcaster_image": null,
+        "broadcaster_live": false,
+        "broadcaster_id": null
+      }
+    ]
+  }
+}

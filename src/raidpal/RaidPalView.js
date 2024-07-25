@@ -17,9 +17,9 @@ import {CondensedFormatter} from "../common/PrettyNumber";
 import RaidPalLogo from "../raidpal-logo.svg";
 import ErrorMessage from "../common/ErrorMessage";
 
-const RAIDPAL_REFRESH_INTERVAL = 900000; // 15 min
+export const RAIDPAL_REFRESH_INTERVAL = 900000; // 15 min
 
-function getCondensedTimeTable(event) {
+export function getCondensedTimeTable(event) {
     const unique = [];
     const { time_table: slots, slot_duration_mins } = event;
 
@@ -43,7 +43,31 @@ function getCondensedTimeTable(event) {
     return unique;
 }
 
-function getLineupUserIds(event, user_id) {
+export function getCondensedTimeTableByName(event) {
+    const unique = [];
+    const { time_table: slots, slot_duration_mins, inconsistent_slot_durations=false } = event;
+
+    for (let endtime, i = 0; i < slots.length; i++) {
+        endtime = (inconsistent_slot_durations && (i < (slots.length-1))) ? Moment.utc(slots[i+1].starttime).toISOString() : Moment.utc(slots[i].starttime).add(slot_duration_mins, 'minutes').toISOString();
+        slots[i].endtime = endtime;
+
+        if (i === 0) {
+            // first slot - add as-is
+            unique.push(slots[i]);
+        } else {
+            if (slots[i-1].broadcaster_display_name.toLowerCase() === slots[i].broadcaster_display_name.toLowerCase()) {
+                // same streamer, update end time
+                unique[unique.length-1].endtime = endtime;
+            } else {
+                // new streamer, add slot
+                unique.push(slots[i]);
+            }
+        }
+    }
+    return unique;
+}
+
+export function getLineupUserIds(event, user_id) {
     // unique ids of folks on the lineup excluding ourselves and empty slots
     const ids = new Set(event.time_table
         .map(slot => slot.broadcaster_id)
@@ -54,6 +78,19 @@ function getLineupUserIds(event, user_id) {
     const uniqueIdsExcludingSelf = uniqueIds.filter(id => id !== user_id);
 
     return { uniqueIds, uniqueIdsExcludingSelf };
+}
+
+export function getLineupUserLogins(event, user_login) {
+    // unique ids of folks on the lineup excluding ourselves and empty slots
+    const logins = new Set(event.time_table
+        .map(slot => slot.broadcaster_display_name.toLowerCase().trim())
+        .filter(user_login => !!user_login)
+    );
+
+    const uniqueLogins = Array.from(logins);
+    const uniqueIdsExcludingSelf = uniqueLogins.filter(login => login !== user_login);
+
+    return { uniqueLogins, uniqueIdsExcludingSelf };
 }
 
 export default function RaidPalView() {

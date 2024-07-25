@@ -1,14 +1,19 @@
 import {useDispatch, useSelector} from "react-redux";
-import {useCallback, useEffect} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {fetchFollowedStreams} from "./StreamActions";
 import {Container, Nav, Navbar, NavDropdown, Tab} from "react-bootstrap";
 import './StreamList.scss';
 import twitchLogo from '../TwitchGlitchPurple.svg';
 import {revokeToken} from "../session/SessionActions";
-import RaidPalView from "../raidpal/RaidPalView";
+import RaidPalView, {getLineupUserLogins} from "../raidpal/RaidPalView";
 import TeamsView from "../teams/TeamsView";
 import FollowersView from "../followers/FollowersView";
 import {fetchUsersTeams} from "../teams/TeamsActions";
+import Dropzone from "../common/Dropzone";
+import {fetchCustomStreamsByLogin, setCustomEventData} from "../raidpal/RaidPalActions";
+import RaidPalCustomView from "../raidpal/RaidPalCustomView";
+import {fetchUsers} from "../users/UserActions";
+import CustomEventModal from "./CustomEventModal";
 export const REFRESH_INTERVAL = 15000;
 
 /**
@@ -22,7 +27,24 @@ function StreamList() {
     const { user_id, login } = useSelector(state => state.session.data);
     const userCache = useSelector(state => state.users.cache);
     const { isFetching: isTeamsFetching, data: teamsData } = useSelector(state => state.teams);
+    const { customEvent } = useSelector(state => state.raidpal);
+    const [ currentTab, setCurrentTab ] = useState('followed');
+    const [ showCustomEventModal, setShowCustomEventModal ] = useState(false);
 
+    const handleTabChange = useCallback((eventKey) => {
+        setCurrentTab(eventKey);
+    }, []);
+
+    const handleShowModal = useCallback((e) => {
+        e && e.preventDefault();
+        e && e.stopPropagation();
+
+        setShowCustomEventModal(true);
+    }, []);
+
+    const handleCloseModal = useCallback(() => {
+        setShowCustomEventModal(false);
+    }, []);
 
     useEffect(() => {
         // Fetch on load
@@ -43,45 +65,118 @@ function StreamList() {
         dispatch(revokeToken());
     }, [dispatch]);
 
+    const loadData = useCallback((data) => {
+        // Check that it appears to have all the proper bits
+        if (!data ||
+            !data.event ||
+            !data.event.title ||
+            !data.event.slot_duration_mins ||
+            !data.event.starttime ||
+            !data.event.time_table ||
+            !data.event.time_table.length
+        ) {
+            console.error('This does not look like a valid event', data);
+            return;
+        }
+
+        // Seems ok - timetable might be botched though
+        dispatch(setCustomEventData(data));
+        console.log('loading event data', data)
+
+        // Queue user fetches
+        const userLogins = Array.from(new Set(data.event.time_table.map(entry => entry.broadcaster_display_name.toLowerCase().trim())))
+            .filter(login => !!login);
+
+        dispatch(fetchUsers(userLogins));
+
+        const {uniqueLogins} = getLineupUserLogins(data.event, login);
+        dispatch(fetchCustomStreamsByLogin(uniqueLogins));
+
+        setCurrentTab('custom');
+    }, [dispatch, login])
+
+    const onCustomEventLoaded = useCallback((data) => {
+        loadData(data);
+        setShowCustomEventModal(false);
+    }, [loadData]);
+
+    const handleFileDrop = useCallback(async (file) => {
+        try {
+            const raw = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    resolve(e.target.result);
+                };
+                reader.onerror = (err) => {
+                    reject(err);
+                }
+
+                reader.readAsText(file);
+            });
+
+            const data = JSON.parse(raw);
+
+            loadData(data);
+
+        } catch (e) {
+            console.error('Failed to parse file', e);
+        }
+    }, [loadData]);
+
     return (
-        <div className="Streams">
-            <Tab.Container id="stream-tabs" defaultActiveKey="followed">
-                <div className="navbar navbar-expand navbar-dark bg-dark sticky-top">
-                    <Container>
-                        <Nav className="me-auto" navbar={true} bsPrefix="navbar-nav">
-                            <Nav.Item>
-                                <Nav.Link eventKey="followed">Followed</Nav.Link>
-                            </Nav.Item>
-                            {!isTeamsFetching && teamsData ? (
+        <Dropzone onFile={handleFileDrop}>
+            <div className="Streams">
+                <Tab.Container id="stream-tabs" activeKey={currentTab} onSelect={handleTabChange}>
+                    <div className="navbar navbar-expand navbar-dark bg-dark sticky-top">
+                        <Container>
+                            <Nav className="me-auto" navbar={true} bsPrefix="navbar-nav">
                                 <Nav.Item>
-                                    <Nav.Link eventKey="teams">Teams</Nav.Link>
+                                    <Nav.Link eventKey="followed">Followed</Nav.Link>
                                 </Nav.Item>
-                            ) : null}
-                            <Nav.Item>
-                                <Nav.Link eventKey="raidpal">RaidPal</Nav.Link>
-                            </Nav.Item>
-                        </Nav>
-                        <Navbar.Toggle />
-                        <Navbar.Collapse className="justify-content-end">
-                            <NavDropdown title={<><img src={userCache[user_id]?.profile_image_url || twitchLogo} alt="" /> {userCache[user_id]?.display_name || login}</>} id="user-dropdown" align="end">
-                                <NavDropdown.Item onClick={handleSignOut}>Sign out</NavDropdown.Item>
-                            </NavDropdown>
-                        </Navbar.Collapse>
-                    </Container>
-                </div>
-                <Tab.Content>
-                    <Tab.Pane eventKey="followed">
-                        <FollowersView />
-                    </Tab.Pane>
-                    <Tab.Pane eventKey="raidpal">
-                        <RaidPalView />
-                    </Tab.Pane>
-                    <Tab.Pane eventKey="teams">
-                        <TeamsView />
-                    </Tab.Pane>
-                </Tab.Content>
-            </Tab.Container>
-        </div>
+                                {!isTeamsFetching && teamsData ? (
+                                    <Nav.Item>
+                                        <Nav.Link eventKey="teams">Teams</Nav.Link>
+                                    </Nav.Item>
+                                ) : null}
+                                <Nav.Item>
+                                    <Nav.Link eventKey="raidpal">RaidPal</Nav.Link>
+                                </Nav.Item>
+                                {customEvent && (
+                                    <Nav.Item>
+                                        <Nav.Link eventKey="custom">Custom</Nav.Link>
+                                    </Nav.Item>
+                                )}
+                            </Nav>
+                            <Navbar.Toggle />
+                            <Navbar.Collapse className="justify-content-end">
+                                <NavDropdown title={<><img src={userCache[user_id]?.profile_image_url || twitchLogo} alt="" /> {userCache[user_id]?.display_name || login}</>} id="user-dropdown" align="end">
+                                    <NavDropdown.Item onClick={handleShowModal}>Custom Event...</NavDropdown.Item>
+                                    <NavDropdown.Divider />
+                                    <NavDropdown.Item onClick={handleSignOut}>Sign out</NavDropdown.Item>
+                                </NavDropdown>
+                            </Navbar.Collapse>
+                        </Container>
+                    </div>
+                    <Tab.Content>
+                        <Tab.Pane eventKey="followed">
+                            <FollowersView />
+                        </Tab.Pane>
+                        <Tab.Pane eventKey="teams">
+                            <TeamsView />
+                        </Tab.Pane>
+                        <Tab.Pane eventKey="raidpal">
+                            <RaidPalView />
+                        </Tab.Pane>
+                        {customEvent && (
+                            <Tab.Pane eventKey="custom">
+                                <RaidPalCustomView />
+                            </Tab.Pane>
+                        )}
+                    </Tab.Content>
+                </Tab.Container>
+                <CustomEventModal showModal={showCustomEventModal} handleCloseModal={handleCloseModal} onCustomEventLoaded={onCustomEventLoaded} />
+            </div>
+        </Dropzone>
     );
 }
 
