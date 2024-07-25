@@ -58,6 +58,7 @@ export default function CustomEventModal({ showModal, handleCloseModal, onCustom
                                     type="text"
                                     required={true}
                                 />
+                                <Form.Text><a href="https://github.com/kfitzgerald/dirty-raid?tab=readme-ov-file#custom-events" rel="noreferrer" target="_blank">See the docs</a> for more information on custom events.</Form.Text>
                             </Form.Group>
                         </Col>
                     </Row>

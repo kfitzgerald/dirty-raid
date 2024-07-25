@@ -13,7 +13,6 @@ import {REFRESH_INTERVAL} from "../streams/StreamList";
 import {setPreference} from "../app/AppActions";
 import StreamInfoModal from "../streams/StreamInfoModal";
 import {CondensedFormatter} from "../common/PrettyNumber";
-import RaidPalLogo from "../raidpal-logo.svg";
 import ErrorMessage from "../common/ErrorMessage";
 import {getCondensedTimeTableByName, getLineupUserLogins} from "./RaidPalView";
 
@@ -90,7 +89,7 @@ export default function RaidPalCustomView() {
             )}
             {selectedEvent && (
                 <div className="event">
-                    <h2><span>{selectedEvent.title}</span><a title="View on RaidPal" target="_blank" rel="noreferrer" href={selectedEvent.raidpal_link}><img src={RaidPalLogo} alt="View on RaidPal" /></a></h2>
+                    <h2><span>{selectedEvent.title}</span></h2>
                     <ShowMoreText lines={3} className="description mb-3">
                         {selectedEvent.description}
                     </ShowMoreText>

@@ -152,11 +152,16 @@ In the simplest form:
 
 # Changelog
 
+### v4.1.1
+- Fixed typo in example event file
+- RaidPalCustomView.js: Removed logo
+- CustomEventModal.js: Added documentation link
+
 ### v4.1.0 – 2024-07-25 – Custom events!
 You can now load custom events using the RaidPal event format - Handy for events with arbitrary slot times that don't 
 work within RaidPal, or events not organized using RaidPal.
 
-See the [exmaple-custom-event.json](docs%2Fexmaple-custom-event.json) example for making your own custom event.
+See the [example-custom-event.json](docs%2Fexample-custom-event.json) example for making your own custom event.
 
 - Added ability to drag and drop a JSON event file into DirtyRaid, loading the custom event
 - Added Custom Event modal, accessible from user dropdown
