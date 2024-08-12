@@ -116,7 +116,12 @@ export default function RaidPalView() {
         return (showRaidPalCreatedEvents
             ? [...(data?.events_joined || []), ...(data?.events || [])]
             : (data?.events_joined || []))
-            .sort((a, b) => new Date(a?.starttime) - new Date(b?.starttime));
+            .filter((event, index, self) =>
+                    index === self.findIndex((e) => (
+                        e.title === event.title && e.starttime === event.starttime
+                    ))
+            )
+            .sort((a, b) => new Date(a.starttime) - new Date(b.starttime));
     }
 
     // Handle side effects when selecting an event
@@ -144,6 +149,7 @@ export default function RaidPalView() {
         dispatch(fetchRaidPalUser((err, data) => {
             // if we have selected created events too, smash the events together
             const raidpalData = getRaidPalData(data);
+            console.log(JSON.stringify(raidpalData))
             // Preselect the best event
             if (raidpalData?.length) {
 
