@@ -149,7 +149,6 @@ export default function RaidPalView() {
         dispatch(fetchRaidPalUser((err, data) => {
             // if we have selected created events too, smash the events together
             const raidpalData = getRaidPalData(data);
-            console.log(JSON.stringify(raidpalData))
             // Preselect the best event
             if (raidpalData?.length) {
 
