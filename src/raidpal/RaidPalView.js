@@ -101,7 +101,7 @@ export default function RaidPalView() {
     const [selectedStreamUserId, setSelectedStreamUserId] = useState(null);
     const [ selectedEventKey, setSelectedEventKey ] = useState(null);
 
-    const { showAmPm } = useSelector(state => state.app.preferences);
+    const { showAmPm, showRaidPalCreatedEvents } = useSelector(state => state.app.preferences);
     const { isFetching, lastError, /*lastUpdated,*/ data, events, streams } = useSelector(state => state.raidpal);
     const { user_id } = useSelector(state => state.session.data);
     const userCache = useSelector(state => state.users.cache);
@@ -111,6 +111,13 @@ export default function RaidPalView() {
 
     const now = Moment.utc();
     const selectedEvent = (selectedEventKey && cache[getSlug(selectedEventKey)]) || null;
+
+    const getRaidPalData = data => {
+        return (showRaidPalCreatedEvents
+            ? [...(data?.events_joined || []), ...(data?.events || [])]
+            : (data?.events_joined || []))
+            .sort((a, b) => new Date(a?.starttime) - new Date(b?.starttime));
+    }
 
     // Handle side effects when selecting an event
     const handleEventChange = useCallback((eventKey) => {
@@ -135,15 +142,17 @@ export default function RaidPalView() {
     useEffect(() => {
         // Fetch RP user event data
         dispatch(fetchRaidPalUser((err, data) => {
+            // if we have selected created events too, smash the events together
+            const raidpalData = getRaidPalData(data);
             // Preselect the best event
-            if (data?.events_joined?.length) {
+            if (raidpalData?.length) {
 
                 // TODO: compare channel slot to now and choose the closest one, could be participating in multiple events
                 // let liveEvents = data.events_joined
                 //     .filter(e => now.isBetween(Moment.utc(e.starttime), Moment.utc(e.endtime)));
                 // const defaultEvent = liveEvents[0] || data.events_joined[0];
 
-                const eventKey = data.events_joined[0].api_link;
+                const eventKey = raidpalData[0].api_link;
                 handleEventChange(eventKey);
             }
         }));
@@ -197,6 +206,12 @@ export default function RaidPalView() {
         dispatch(setPreference('showAmPm', e.target.checked));
     }, [dispatch]);
 
+    const handleToggleShowCreatedRaidpalEvents = useCallback(e => {
+        dispatch(setPreference('showRaidPalCreatedEvents', e.target.checked));
+    }, [dispatch]);
+
+    const raidpalData = getRaidPalData(data);
+
     return (
         <Container>
             {lastError && (
@@ -204,16 +219,19 @@ export default function RaidPalView() {
                     <ErrorMessage error={lastError} />
                 </Alert>
             )}
-            <div className="display-opts">
-                <label>Your Events</label>
+            <div className="display-opts fle">
+                <div className="opt-labels">
+                    <label>Your Events</label>
+                    <label><Form.Check type="switch" id="show-createdevents" label="Created events" checked={showRaidPalCreatedEvents} onChange={handleToggleShowCreatedRaidpalEvents} /></label>
+                </div>
             </div>
             {data ? (
                 <Nav activeKey={selectedEventKey} className="flex-column event-list mb-3" onSelect={handleEventChange}>
-                    {!data.events_joined?.length ? (
+                    {!raidpalData?.length ? (
                         <Nav.Item className="static"><Alert variant="warning" className="mt-3">You don't have any upcoming events :(</Alert></Nav.Item>
                     ) : (
-                        <NavDropdown placement="bottom" menuVariant="dark" title={<span>{selectedEvent?.title || (selectedEventKey && data.events_joined.find(e => e.api_link === selectedEventKey))?.title || 'Select RaidPal event...'}</span>}>
-                            {data.events_joined.map((event, i) => {
+                        <NavDropdown placement="bottom" menuVariant="dark" title={<span>{selectedEvent?.title || (selectedEventKey && raidpalData.find(e => e.api_link === selectedEventKey))?.title || 'Select RaidPal event...'}</span>}>
+                            {raidpalData.map((event, i) => {
                                 const isLive = now.isBetween(Moment.utc(event.starttime), Moment.utc(event.endtime));
                                 return (
                                     <NavDropdown.Item key={i} eventKey={event.api_link}>
