@@ -112,9 +112,11 @@ export default function RaidPalView() {
     const now = Moment.utc();
     const selectedEvent = (selectedEventKey && cache[getSlug(selectedEventKey)]) || null;
 
+    const hasCreatedEvents = data => data?.events?.length > 0 || false;
+
     const getRaidPalData = data => {
-        return (showRaidPalCreatedEvents
-            ? [...(data?.events_joined || []), ...(data?.events || [])]
+        return ((hasCreatedEvents(data) && showRaidPalCreatedEvents)
+            ? [].concat(data?.events_joined || []).concat(data?.events || [])
             : (data?.events_joined || []))
             .filter((event, index, self) =>
                     index === self.findIndex((e) => (
@@ -227,7 +229,9 @@ export default function RaidPalView() {
             <div className="display-opts fle">
                 <div className="opt-labels">
                     <label>Your Events</label>
-                    <label><Form.Check type="switch" id="show-createdevents" label="Created events" checked={showRaidPalCreatedEvents} onChange={handleToggleShowCreatedRaidpalEvents} /></label>
+                    {hasCreatedEvents(data) && (
+                        <label><Form.Check type="switch" id="show-createdevents" label="Created events" checked={showRaidPalCreatedEvents} onChange={handleToggleShowCreatedRaidpalEvents} /></label>
+                    )}
                 </div>
             </div>
             {data ? (

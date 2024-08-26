@@ -74,6 +74,14 @@ Add the app as a custom dock to OBS:
 - Click `Apply` - the Dock should now appear, likely behind the Custom Browser Docks dialog.
 - Move the dock to where ever you'd like, docking it to OBS or keep it detached for a separate monitor.
 
+## Created Events
+
+If you are an event organizer on RaidPal, you may not always join the events you organize. You will see the `Created 
+events` toggle on the RaidPal tab, which will show/hide your created events. Use this to keep track of your events from 
+DirtyRaid!
+
+![](docs/screenshot-raidpal-created-events.png)
+
 ## Custom Events
 
 Sometimes you may need to organize an event outside RaidPal for various reasons. With some effort, you can create a
@@ -151,6 +159,11 @@ In the simplest form:
 
 
 # Changelog
+
+### v4.2.0 - Created events toggle
+- Added Created events toggle to show/hide events you have organized (but may not have joined)
+- Fixed a memory leak caused when you have an empty lineup
+- Fixed a possible crash when a custom event has empty slot names
 
 ### v4.1.1
 - Fixed typo in example event file

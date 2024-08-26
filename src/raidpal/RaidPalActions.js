@@ -168,7 +168,7 @@ export function fetchUserStreams(user_ids, callback=() => {}) {
         const queue = [].concat(user_ids);
         const pageSize = 100;
         let streamList = [];
-        let ids, done = false, body, error, after, query;
+        let ids, done = queue.length === 0, body, error, after, query;
         while (!done) { // ooo scary!
 
             // pull a batch of ids
