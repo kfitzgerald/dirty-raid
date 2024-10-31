@@ -64,8 +64,8 @@ function ReUsableStreamList({streams, lastUpdated, isFetching, handleRefresh}) {
     // Storing the stream id because, if the streams list refreshes and the id is gone, the streamer went offline
     // Would be a total shame if someone popped the modal open and suddenly the streamer went offline while they were finishing up
     // Also has a fallback userId to update the selectedStream, e.g. go-live or stream crash
-    const selectedStream = (selectedStreamId && streams.find(stream => stream.id === selectedStreamId)) ||
-        (selectedStreamUserId && streams.find(stream => stream.user_id === selectedStreamUserId)) || null;
+    const selectedStream = (selectedStreamId && streams?.find(stream => stream.id === selectedStreamId)) ||
+        (selectedStreamUserId && streams?.find(stream => stream.user_id === selectedStreamUserId)) || null;
 
     const streamList = [].concat(streams).sort((a, b) => {
 

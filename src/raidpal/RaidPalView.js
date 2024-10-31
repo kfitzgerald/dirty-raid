@@ -206,8 +206,8 @@ export default function RaidPalView() {
         };
     }, [dispatch, handleRefresh]);
 
-    const selectedStream = (selectedStreamId && streams.data.find(stream => stream.id === selectedStreamId)) ||
-        (selectedStreamUserId && streams.data.find(stream => stream.user_id === selectedStreamUserId)) || null;
+    const selectedStream = (selectedStreamId && streams.data?.find(stream => stream.id === selectedStreamId)) ||
+        (selectedStreamUserId && streams.data?.find(stream => stream.user_id === selectedStreamUserId)) || null;
 
     const handleToggleAmPm = useCallback((e) => {
         dispatch(setPreference('showAmPm', e.target.checked));
