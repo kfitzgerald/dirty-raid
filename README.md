@@ -161,7 +161,7 @@ In the simplest form:
 
 # Changelog
 
-### v4.3.0 - New My Channel QR code view
+### v4.3.1 - New My Channel QR code view
 - Added My Channel in user dropdown which displays your channel QR code and link to your channel
 
 ### v4.2.1

@@ -27,7 +27,7 @@ export default function QRCodeModal({ showModal, handleCloseModal }) {
                 <Row>
                     <Col className="qr-container">
                         <QRCode value={`https://twitch.tv/${encodeURIComponent(login)}`}
-                                logoImage={channelUser.profile_image_url}
+                                logoImage={channelUser?.profile_image_url || null}
                                 removeQrCodeBehindLogo={true}
                                 logoPadding={2}
                         />
