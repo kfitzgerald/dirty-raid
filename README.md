@@ -14,6 +14,7 @@ Features:
 - **Twitch Teams integration** – See your live teammates from any of your teams.
 - **Chat Announcements** – Post a chat message or announcement when you start a raid to let any stragglers know where you are going.
 - **Raid Roulette** – Can't decide who to raid? No problem, pick one at random.
+- **Channel QR Code** – Meeting IRL friends? Share your channel by displaying your QR code! 
 
 
 ## Screenshots
@@ -159,6 +160,12 @@ In the simplest form:
 
 
 # Changelog
+
+### v4.3.0 - New My Channel QR code view
+- Added My Channel in user dropdown which displays your channel QR code and link to your channel
+
+### v4.2.1
+- Fix for edge case where streams fail to return from Twitch
 
 ### v4.2.0 - Created events toggle
 - Added Created events toggle to show/hide events you have organized (but may not have joined)
