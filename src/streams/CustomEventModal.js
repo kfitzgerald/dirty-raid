@@ -43,7 +43,7 @@ export default function CustomEventModal({ showModal, handleCloseModal, onCustom
             <Form onSubmit={handleSubmit}>
                 <Modal.Header closeButton>
                     <Modal.Title>
-                        Custom Event URL
+                        Load Custom Event
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>

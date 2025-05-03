@@ -396,6 +396,17 @@ a {
   text-: 0 0 white;
 }
 
+.qr-container {
+  display: flex;
+  flex-direction: column;
+
+  canvas {
+    width: calc(min(100%, min(60vw, 60vh))) !important;
+    height: auto !important;
+    align-self: center;
+  }
+}
+
 @keyframes rainbow {
   0% {
     background-position: 0 50%

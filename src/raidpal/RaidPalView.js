@@ -112,9 +112,9 @@ export default function RaidPalView() {
     const now = Moment.utc();
     const selectedEvent = (selectedEventKey && cache[getSlug(selectedEventKey)]) || null;
 
-    const hasCreatedEvents = data => data?.events?.length > 0 || false;
+    const hasCreatedEvents = useCallback((data) => data?.events?.length > 0 || false, []);
 
-    const getRaidPalData = data => {
+    const getRaidPalData = useCallback((data) => {
         return ((hasCreatedEvents(data) && showRaidPalCreatedEvents)
             ? [].concat(data?.events_joined || []).concat(data?.events || [])
             : (data?.events_joined || []))
@@ -124,7 +124,7 @@ export default function RaidPalView() {
                     ))
             )
             .sort((a, b) => new Date(a.starttime) - new Date(b.starttime));
-    }
+    }, [ hasCreatedEvents, showRaidPalCreatedEvents ])
 
     // Handle side effects when selecting an event
     const handleEventChange = useCallback((eventKey) => {
@@ -173,7 +173,7 @@ export default function RaidPalView() {
         return () => {
             clearInterval(rpRefreshInterval);
         };
-    }, [dispatch, setSelectedEventKey, handleEventChange]);
+    }, [dispatch, setSelectedEventKey, handleEventChange, getRaidPalData]);
 
     const handleRefresh = useCallback(() => {
         if (selectedEvent) {

@@ -14,6 +14,7 @@ import {fetchCustomStreamsByLogin, setCustomEventData} from "../raidpal/RaidPalA
 import RaidPalCustomView from "../raidpal/RaidPalCustomView";
 import {fetchUsers} from "../users/UserActions";
 import CustomEventModal from "./CustomEventModal";
+import QRCodeModal from "../qr-modal/QRCodeModal";
 export const REFRESH_INTERVAL = 15000;
 
 /**
@@ -30,6 +31,7 @@ function StreamList() {
     const { customEvent } = useSelector(state => state.raidpal);
     const [ currentTab, setCurrentTab ] = useState('followed');
     const [ showCustomEventModal, setShowCustomEventModal ] = useState(false);
+    const [ showQRCodeModal, setShowQRCodeModal ] = useState(false);
 
     const handleTabChange = useCallback((eventKey) => {
         setCurrentTab(eventKey);
@@ -42,8 +44,19 @@ function StreamList() {
         setShowCustomEventModal(true);
     }, []);
 
+    const handleShowQRModal = useCallback((e) => {
+        e && e.preventDefault();
+        e && e.stopPropagation();
+
+        setShowQRCodeModal(true);
+    }, []);
+
     const handleCloseModal = useCallback(() => {
         setShowCustomEventModal(false);
+    }, []);
+
+    const handleCloseQRModal = useCallback(() => {
+        setShowQRCodeModal(false);
     }, []);
 
     useEffect(() => {
@@ -150,7 +163,8 @@ function StreamList() {
                             <Navbar.Toggle />
                             <Navbar.Collapse className="justify-content-end">
                                 <NavDropdown title={<><img src={userCache[user_id]?.profile_image_url || twitchLogo} alt="" /> {userCache[user_id]?.display_name || login}</>} id="user-dropdown" align="end">
-                                    <NavDropdown.Item onClick={handleShowModal}>Custom Event...</NavDropdown.Item>
+                                    <NavDropdown.Item onClick={handleShowQRModal}>My Channel</NavDropdown.Item>
+                                    <NavDropdown.Item onClick={handleShowModal}>Custom Event</NavDropdown.Item>
                                     <NavDropdown.Divider />
                                     <NavDropdown.Item onClick={handleSignOut}>Sign out</NavDropdown.Item>
                                 </NavDropdown>
@@ -175,6 +189,7 @@ function StreamList() {
                     </Tab.Content>
                 </Tab.Container>
                 <CustomEventModal showModal={showCustomEventModal} handleCloseModal={handleCloseModal} onCustomEventLoaded={onCustomEventLoaded} />
+                <QRCodeModal showModal={showQRCodeModal} handleCloseModal={handleCloseQRModal} />
             </div>
         </Dropzone>
     );
