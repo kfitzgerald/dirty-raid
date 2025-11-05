@@ -173,7 +173,7 @@ export default function RaidPalView() {
         return () => {
             clearInterval(rpRefreshInterval);
         };
-    }, [dispatch, setSelectedEventKey, handleEventChange, fetchRaidPalUser, getRaidPalData]);
+    }, [dispatch, setSelectedEventKey, handleEventChange, getRaidPalData]);
 
     const handleRefresh = useCallback(() => {
         if (selectedEvent) {
