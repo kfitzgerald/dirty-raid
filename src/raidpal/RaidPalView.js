@@ -101,7 +101,7 @@ export default function RaidPalView() {
     const [selectedStreamUserId, setSelectedStreamUserId] = useState(null);
     const [ selectedEventKey, setSelectedEventKey ] = useState(null);
 
-    const { showAmPm, showRaidPalCreatedEvents } = useSelector(state => state.app.preferences);
+    const { showAmPm, showRaidPalCreatedEvents, showDay } = useSelector(state => state.app.preferences);
     const { isFetching, lastError, /*lastUpdated,*/ data, events, streams } = useSelector(state => state.raidpal);
     const { user_id } = useSelector(state => state.session.data);
     const userCache = useSelector(state => state.users.cache);
@@ -173,7 +173,7 @@ export default function RaidPalView() {
         return () => {
             clearInterval(rpRefreshInterval);
         };
-    }, [dispatch, setSelectedEventKey, handleEventChange, getRaidPalData]);
+    }, [dispatch, setSelectedEventKey, handleEventChange, fetchRaidPalUser, getRaidPalData]);
 
     const handleRefresh = useCallback(() => {
         if (selectedEvent) {
@@ -211,6 +211,10 @@ export default function RaidPalView() {
 
     const handleToggleAmPm = useCallback((e) => {
         dispatch(setPreference('showAmPm', e.target.checked));
+    }, [dispatch]);
+
+    const handleToggleShowDay = useCallback((e) => {
+        dispatch(setPreference('showDay', e.target.checked));
     }, [dispatch]);
 
     const handleToggleShowCreatedRaidpalEvents = useCallback(e => {
@@ -279,6 +283,9 @@ export default function RaidPalView() {
                         </div>
                         <div>
                             <div>
+                              <Form.Check type="switch" id="show-day" label="Day" checked={!!showDay} onChange={handleToggleShowDay} />
+                            </div>
+                            <div>
                                 <Form.Check type="switch" id="show-ampm" label="AM/PM" checked={showAmPm} onChange={handleToggleAmPm} />
                             </div>
                             <div className="refresh text-end flex-grow-1">
@@ -310,7 +317,7 @@ export default function RaidPalView() {
                                             {slot.slot_occupied ? slot.broadcaster_display_name : <em>slot not occupied</em>}
                                         </div>
                                         <div className="timing">
-                                            <span>{Moment(slot.starttime).format(showAmPm ? 'MMM Do, h:mma' : 'MMM Do, HH:mm')}</span>{' – '}
+                                            <span>{Moment(slot.starttime).format((showDay ? 'ddd, ' : '') + (showAmPm ? 'MMM Do, h:mma' : 'MMM Do, HH:mm'))}</span>{' – '}
                                             <span>{Moment(slot.endtime).format(showAmPm ? 'h:mma' : 'HH:mm')}</span>
                                         </div>
                                     </div>

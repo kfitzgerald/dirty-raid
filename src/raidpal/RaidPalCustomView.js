@@ -23,7 +23,7 @@ export default function RaidPalCustomView() {
     const [selectedStreamId, setSelectedStream] = useState(null);
     const [selectedStreamUserLogin, setSelectedStreamUserLogin] = useState(null);
 
-    const { showAmPm } = useSelector(state => state.app.preferences);
+    const { showAmPm, showDay } = useSelector(state => state.app.preferences);
     const { lastError, customEventStreams: streams, customEvent } = useSelector(state => state.raidpal);
     const { login } = useSelector(state => state.session.data);
     const userCache = useSelector(state => state.users.cache);
@@ -71,6 +71,10 @@ export default function RaidPalCustomView() {
         dispatch(setPreference('showAmPm', e.target.checked));
     }, [dispatch]);
 
+    const handleToggleShowDay = useCallback((e) => {
+        dispatch(setPreference('showDay', e.target.checked));
+    }, [dispatch]);
+
     return (
         <Container>
             {lastError && (
@@ -102,6 +106,9 @@ export default function RaidPalCustomView() {
                             <div>
                                 <Form.Check type="switch" id="show-ampm" label="AM/PM" checked={showAmPm} onChange={handleToggleAmPm} />
                             </div>
+                            <div>
+                                <Form.Check type="switch" id="show-day" label="Day" checked={!!showDay} onChange={handleToggleShowDay} />
+                            </div>
                             <div className="refresh text-end flex-grow-1">
                                 <Button disabled={isStreamStatusFetching} onClick={handleRefresh}><i className="bi bi-arrow-clockwise"/></Button>
                             </div>
@@ -132,7 +139,7 @@ export default function RaidPalCustomView() {
                                             {slot.slot_occupied ? slot.broadcaster_display_name : <em>slot not occupied</em>}
                                         </div>
                                         <div className="timing">
-                                            <span>{Moment(slot.starttime).format(showAmPm ? 'MMM Do, h:mma' : 'MMM Do, HH:mm')}</span>{' – '}
+                                            <span>{Moment(slot.starttime).format((showDay ? 'ddd ' : '') + (showAmPm ? 'MMM Do, h:mma' : 'MMM Do, HH:mm'))}</span>{' – '}
                                             <span>{Moment(slot.endtime).format(showAmPm ? 'h:mma' : 'HH:mm')}</span>
                                         </div>
                                     </div>

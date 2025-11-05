@@ -3,6 +3,7 @@ export const DEFAULT_PREFERENCES = {
     showTags: true,
     showProfileImg: true,
     showAmPm: true,
+    showDay: false,
     showRaidPalCreatedEvents: false,
     raidChatMessageEnabled: false,
     raidChatMessage: 'Thank you for watching! We are raiding over to {Target}, should you be left behind, please click here: https://twitch.tv/{target}',
