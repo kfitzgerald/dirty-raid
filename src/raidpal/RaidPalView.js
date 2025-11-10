@@ -47,6 +47,8 @@ export function getCondensedTimeTableByName(event) {
     const unique = [];
     const { time_table: slots, slot_duration_mins, inconsistent_slot_durations=false } = event;
 
+    const toLower = (s) => (typeof s === 'string') ? s.toLowerCase() : '';
+
     for (let endtime, i = 0; i < slots.length; i++) {
         endtime = (inconsistent_slot_durations && (i < (slots.length-1))) ? Moment.utc(slots[i+1].starttime).toISOString() : Moment.utc(slots[i].starttime).add(slot_duration_mins, 'minutes').toISOString();
         slots[i].endtime = endtime;
@@ -55,7 +57,12 @@ export function getCondensedTimeTableByName(event) {
             // first slot - add as-is
             unique.push(slots[i]);
         } else {
-            if (slots[i-1].broadcaster_display_name.toLowerCase() === slots[i].broadcaster_display_name.toLowerCase()) {
+            const prev = slots[i-1];
+            const curr = slots[i];
+            const prevName = toLower(prev.broadcaster_display_name);
+            const currName = toLower(curr.broadcaster_display_name);
+            // Only merge adjacent slots if both are occupied and names match
+            if (prev.slot_occupied && curr.slot_occupied && prevName && currName && prevName === currName) {
                 // same streamer, update end time
                 unique[unique.length-1].endtime = endtime;
             } else {
@@ -83,7 +90,7 @@ export function getLineupUserIds(event, user_id) {
 export function getLineupUserLogins(event, user_login) {
     // unique ids of folks on the lineup excluding ourselves and empty slots
     const logins = new Set(event.time_table
-        .map(slot => slot.broadcaster_display_name.toLowerCase().trim())
+        .map(slot => (slot && typeof slot.broadcaster_display_name === 'string') ? slot.broadcaster_display_name.toLowerCase().trim() : '')
         .filter(user_login => !!user_login)
     );
 

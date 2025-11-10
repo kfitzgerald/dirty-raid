@@ -28,7 +28,7 @@ function StreamList() {
     const { user_id, login } = useSelector(state => state.session.data);
     const userCache = useSelector(state => state.users.cache);
     const { isFetching: isTeamsFetching, data: teamsData } = useSelector(state => state.teams);
-    const { customEvent } = useSelector(state => state.raidpal);
+    const { events: customEvents, selectedEventKey } = useSelector(state => state.custom);
     const [ currentTab, setCurrentTab ] = useState('followed');
     const [ showCustomEventModal, setShowCustomEventModal ] = useState(false);
     const [ showQRCodeModal, setShowQRCodeModal ] = useState(false);
@@ -59,6 +59,13 @@ function StreamList() {
         setShowQRCodeModal(false);
     }, []);
 
+    // When the last custom event is removed, if on the Custom tab, switch back to Followed
+    useEffect(() => {
+        if (currentTab === 'custom' && customEvents.length === 0) {
+            setCurrentTab('followed');
+        }
+    }, [currentTab, customEvents.length]);
+
     useEffect(() => {
         // Fetch on load
         dispatch(fetchFollowedStreams());
@@ -73,6 +80,24 @@ function StreamList() {
             clearInterval(refreshInterval);
         };
     }, [dispatch]);
+
+    // When a custom event exists (persisted or newly loaded), ensure we fetch related users and streams
+    const selectedCustomEvent = customEvents.find(e => e.key === selectedEventKey)?.data || null;
+
+    useEffect(() => {
+        if (!selectedCustomEvent || !selectedCustomEvent.event) return;
+
+        const userLogins = Array.from(new Set(
+            selectedCustomEvent.event.time_table
+                .map(entry => (entry && typeof entry.broadcaster_display_name === 'string') ? entry.broadcaster_display_name.toLowerCase().trim() : '')
+        )).filter(login => !!login);
+
+        if (userLogins.length) {
+            dispatch(fetchUsers(userLogins));
+            const { uniqueLogins } = getLineupUserLogins(selectedCustomEvent.event, login);
+            dispatch(fetchCustomStreamsByLogin(uniqueLogins));
+        }
+    }, [dispatch, selectedCustomEvent, login]);
 
     const handleSignOut = useCallback(() => {
         dispatch(revokeToken());
@@ -97,8 +122,10 @@ function StreamList() {
         console.log('loading event data', data)
 
         // Queue user fetches
-        const userLogins = Array.from(new Set(data.event.time_table.map(entry => entry.broadcaster_display_name.toLowerCase().trim())))
-            .filter(login => !!login);
+        const userLogins = Array.from(new Set(
+            data.event.time_table
+                .map(entry => (entry && typeof entry.broadcaster_display_name === 'string') ? entry.broadcaster_display_name.toLowerCase().trim() : '')
+        )).filter(login => !!login);
 
         dispatch(fetchUsers(userLogins));
 
@@ -154,7 +181,7 @@ function StreamList() {
                                 <Nav.Item>
                                     <Nav.Link eventKey="raidpal">RaidPal</Nav.Link>
                                 </Nav.Item>
-                                {customEvent && (
+                                {customEvents.length > 0 && (
                                     <Nav.Item>
                                         <Nav.Link eventKey="custom">Custom</Nav.Link>
                                     </Nav.Item>
@@ -181,7 +208,7 @@ function StreamList() {
                         <Tab.Pane eventKey="raidpal">
                             <RaidPalView />
                         </Tab.Pane>
-                        {customEvent && (
+                        {customEvents.length > 0 && (
                             <Tab.Pane eventKey="custom">
                                 <RaidPalCustomView />
                             </Tab.Pane>
