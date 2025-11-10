@@ -196,6 +196,30 @@ a {
       margin-left: .75rem;
     }
   }
+
+  // Overlay clear button on JSON textarea in Load tab
+  .json-textarea-wrapper {
+    position: relative;
+    margin-bottom: .5rem; // space for validation/error messages below
+
+    textarea.form-control {
+      padding-right: 2.25rem; // space for the clear button
+    }
+
+    .json-clear-btn {
+      position: absolute;
+      top: .35rem;
+      right: .35rem;
+      color: #bf94ff;
+      text-decoration: none;
+      padding: .25rem;
+
+      &:hover {
+        color: lighten(#bf94ff, 10%);
+        background: transparent;
+      }
+    }
+  }
 }
 
 .partner {

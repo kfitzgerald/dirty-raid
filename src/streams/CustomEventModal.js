@@ -11,6 +11,7 @@ export default function CustomEventModal({ showModal, handleCloseModal, onCustom
     const [activeTab, setActiveTab] = useState('load');
     const [error, setError] = useState(false);
     const customURLRef = useRef();
+    const customJSONRef = useRef();
 
     const normalizeUrl = useCallback((raw) => {
         try {
@@ -57,20 +58,27 @@ export default function CustomEventModal({ showModal, handleCloseModal, onCustom
         setError(null);
 
         try {
-            // Build the effective URL: if it's a RaidPal event URL, map to the API endpoint
-            const effectiveUrl = normalizeUrl(customURLRef.current.value);
-
-            // Fetch the payload
-            const data = await fetch(effectiveUrl, {
-                method: 'GET',
-                credentials: "omit",
-                headers: new Headers({
-                    'Accept': 'application/json,text/javascript'    // we always want JSON
-                })
-            })
-                .then(res => res.json())
-
-            onCustomEventLoaded(data);
+            // Prefer pasted JSON if present
+            const pasted = (customJSONRef?.current?.value || '').trim();
+            if (pasted) {
+                const data = JSON.parse(pasted);
+                onCustomEventLoaded(data);
+            } else {
+                // Otherwise, fetch from URL
+                const rawUrl = customURLRef.current?.value || '';
+                if (!rawUrl.trim()) {
+                    throw new Error('Please provide a URL or paste JSON');
+                }
+                const effectiveUrl = normalizeUrl(rawUrl);
+                const data = await fetch(effectiveUrl, {
+                    method: 'GET',
+                    credentials: "omit",
+                    headers: new Headers({
+                        'Accept': 'application/json,text/javascript'
+                    })
+                }).then(res => res.json());
+                onCustomEventLoaded(data);
+            }
 
         } catch (err) {
             setError(err);
@@ -101,10 +109,31 @@ export default function CustomEventModal({ showModal, handleCloseModal, onCustom
                                             ref={customURLRef}
                                             placeholder={"e.g. https://raidpal.com/en/event/my-event or https://api.raidpal.com/rest/event/my-event"}
                                             type="text"
-                                            required={true}
                                         />
                                         <Form.Text><a href="https://github.com/kfitzgerald/dirty-raid?tab=readme-ov-file#custom-events" rel="noreferrer" target="_blank">See the docs</a> for more information on custom events.</Form.Text>
                                     </Form.Group>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col>
+                                    <Form.Label className="fw-semibold">Or paste JSON</Form.Label>
+                                    <div className="json-textarea-wrapper">
+                                        <Form.Control
+                                            as="textarea"
+                                            rows={6}
+                                            ref={customJSONRef}
+                                            placeholder={"Paste custom event JSON here..."}
+                                        />
+                                        <Button
+                                            variant="link"
+                                            className="json-clear-btn"
+                                            title="Clear"
+                                            aria-label="Clear pasted JSON"
+                                            onClick={() => { if (customJSONRef.current) customJSONRef.current.value = ''; }}
+                                        >
+                                            <i className="bi bi-trash"/>
+                                        </Button>
+                                    </div>
                                 </Col>
                             </Row>
                             {error && (
@@ -147,7 +176,7 @@ export default function CustomEventModal({ showModal, handleCloseModal, onCustom
                 </Button>
                 {activeTab === 'load' && (
                     <Button variant="primary" type="submit" form="custom-event-form" disabled={fetching}>
-                        Fetch Event
+                        Import Event
                     </Button>
                 )}
             </Modal.Footer>
