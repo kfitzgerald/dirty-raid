@@ -16,6 +16,7 @@ import StreamInfoModal from "../streams/StreamInfoModal";
 import {CondensedFormatter} from "../common/PrettyNumber";
 import RaidPalLogo from "../raidpal-logo.svg";
 import ErrorMessage from "../common/ErrorMessage";
+import AddToCalendarButton from "./AddToCalendarButton";
 
 export const RAIDPAL_REFRESH_INTERVAL = 900000; // 15 min
 
@@ -310,8 +311,9 @@ export default function RaidPalView() {
                                             {slot.slot_occupied ? slot.broadcaster_display_name : <em>slot not occupied</em>}
                                         </div>
                                         <div className="timing">
-                                            <span>{Moment(slot.starttime).format(showAmPm ? 'MMM Do, h:mma' : 'MMM Do, HH:mm')}</span>{' – '}
+                                            <span>{Moment(slot.starttime).format(showAmPm ? 'ddd, MMM Do, h:mma' : 'ddd, MMM Do, HH:mm')}</span>{' – '}
                                             <span>{Moment(slot.endtime).format(showAmPm ? 'h:mma' : 'HH:mm')}</span>
+                                            <AddToCalendarButton slot={slot} event={selectedEvent} />
                                         </div>
                                     </div>
                                     <div className="stream-status">

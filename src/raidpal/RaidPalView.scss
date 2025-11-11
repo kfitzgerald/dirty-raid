@@ -168,3 +168,16 @@
 
   }
 }
+
+.btn.add-to-calendar {
+    color: white;
+
+    &:focus,
+    &.active {
+      color: white;
+    }
+
+    &:hover {
+      color: white;
+    }
+}
