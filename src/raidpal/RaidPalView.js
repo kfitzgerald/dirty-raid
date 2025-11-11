@@ -271,7 +271,7 @@ export default function RaidPalView() {
                 <div className="event">
                     <h2><span>{selectedEvent.title}</span><a title="View on RaidPal" target="_blank" rel="noreferrer" href={selectedEvent.raidpal_link}><img src={RaidPalLogo} alt="View on RaidPal" /></a></h2>
                     <ShowMoreText lines={3} className="description mb-3">
-                        {selectedEvent.description}
+                        {selectedEvent.description.replace(/(<([^>]+)>)/gi, '')}
                     </ShowMoreText>
                     <div className="display-opts">
                         <div className="opt-labels">
