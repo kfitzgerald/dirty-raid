@@ -9,3 +9,6 @@ export function sliceIntoChunks(arr, chunkSize) {
     return res;
 }
 
+export function toLower(value) {
+    return (typeof value === 'string') ? value.toLowerCase() : '';
+}

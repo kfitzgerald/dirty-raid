@@ -15,6 +15,7 @@ import RaidPalCustomView from "../raidpal/RaidPalCustomView";
 import {fetchUsers} from "../users/UserActions";
 import CustomEventModal from "./CustomEventModal";
 import QRCodeModal from "../qr-modal/QRCodeModal";
+import {toLower} from "../common/Utils";
 export const REFRESH_INTERVAL = 15000;
 
 /**
@@ -89,7 +90,7 @@ function StreamList() {
 
         const userLogins = Array.from(new Set(
             selectedCustomEvent.event.time_table
-                .map(entry => (entry && typeof entry.broadcaster_display_name === 'string') ? entry.broadcaster_display_name.toLowerCase().trim() : '')
+                .map(entry => entry ? toLower(entry.broadcaster_display_name).trim() : '')
         )).filter(login => !!login);
 
         if (userLogins.length) {
@@ -124,7 +125,7 @@ function StreamList() {
         // Queue user fetches
         const userLogins = Array.from(new Set(
             data.event.time_table
-                .map(entry => (entry && typeof entry.broadcaster_display_name === 'string') ? entry.broadcaster_display_name.toLowerCase().trim() : '')
+                .map(entry => entry ? toLower(entry.broadcaster_display_name).trim() : '')
         )).filter(login => !!login);
 
         dispatch(fetchUsers(userLogins));

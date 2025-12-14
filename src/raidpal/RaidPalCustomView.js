@@ -16,6 +16,7 @@ import {CondensedFormatter} from "../common/PrettyNumber";
 import ErrorMessage from "../common/ErrorMessage";
 import {getCondensedTimeTableByName, getLineupUserLogins} from "./RaidPalView";
 import {removeCustomEvent, selectCustomEvent} from "./RaidPalActions";
+import {toLower} from "../common/Utils";
 
 export default function RaidPalCustomView() {
     const dispatch = useDispatch();
@@ -142,7 +143,7 @@ export default function RaidPalCustomView() {
                     </div>
                     <div className="lineup">
                         {getCondensedTimeTableByName(selectedEvent).map((slot, i) => {
-                            const slotLoginName = (typeof slot.broadcaster_display_name === 'string') ? slot.broadcaster_display_name.toLowerCase() : '';
+                            const slotLoginName = toLower(slot.broadcaster_display_name);
                             const isCurrent = now.isBetween(Moment.utc(slot.starttime), Moment.utc(slot.endtime));
                             const currentLiveStream = streams.data && streams.data.find(stream => stream.user_login === slotLoginName);
                             const profile = Object.values(userCache).find(u => u.login === slotLoginName);

@@ -16,6 +16,7 @@ import StreamInfoModal from "../streams/StreamInfoModal";
 import {CondensedFormatter} from "../common/PrettyNumber";
 import RaidPalLogo from "../raidpal-logo.svg";
 import ErrorMessage from "../common/ErrorMessage";
+import {toLower} from "../common/Utils";
 
 export const RAIDPAL_REFRESH_INTERVAL = 900000; // 15 min
 
@@ -46,8 +47,6 @@ export function getCondensedTimeTable(event) {
 export function getCondensedTimeTableByName(event) {
     const unique = [];
     const { time_table: slots, slot_duration_mins, inconsistent_slot_durations=false } = event;
-
-    const toLower = (s) => (typeof s === 'string') ? s.toLowerCase() : '';
 
     for (let endtime, i = 0; i < slots.length; i++) {
         endtime = (inconsistent_slot_durations && (i < (slots.length-1))) ? Moment.utc(slots[i+1].starttime).toISOString() : Moment.utc(slots[i].starttime).add(slot_duration_mins, 'minutes').toISOString();
@@ -90,7 +89,7 @@ export function getLineupUserIds(event, user_id) {
 export function getLineupUserLogins(event, user_login) {
     // unique ids of folks on the lineup excluding ourselves and empty slots
     const logins = new Set(event.time_table
-        .map(slot => (slot && typeof slot.broadcaster_display_name === 'string') ? slot.broadcaster_display_name.toLowerCase().trim() : '')
+        .map(slot => slot ? toLower(slot.broadcaster_display_name).trim() : '')
         .filter(user_login => !!user_login)
     );
 
@@ -161,12 +160,42 @@ export default function RaidPalView() {
             // Preselect the best event
             if (raidpalData?.length) {
 
-                // TODO: compare channel slot to now and choose the closest one, could be participating in multiple events
-                // let liveEvents = data.events_joined
-                //     .filter(e => now.isBetween(Moment.utc(e.starttime), Moment.utc(e.endtime)));
-                // const defaultEvent = liveEvents[0] || data.events_joined[0];
+                let closestEventKey = raidpalData[0].api_link;
+                let closestDiff = Number.MAX_SAFE_INTEGER;
 
-                const eventKey = raidpalData[0].api_link;
+                for (let i = 0; i < raidpalData.length; i++) {
+                    const event = raidpalData[i];
+                    if (!Array.isArray(event.time_table)) {
+                        continue;
+                    }
+
+                    for (let j = 0; j < event.time_table.length; j++) {
+                        const slot = event.time_table[j];
+                        if (slot?.broadcaster_id !== user_id) {
+                            continue;
+                        }
+
+                        const slotStart = Moment.utc(slot.starttime);
+                        if (!slotStart.isValid()) {
+                            continue;
+                        }
+
+                        let diff = Math.abs(slotStart.diff(now));
+
+                        const slotDuration = Number.isFinite(event.slot_duration_mins) ? event.slot_duration_mins : null;
+                        const slotEnd = slot.endtime ? Moment.utc(slot.endtime) : (slotDuration ? Moment(slotStart).add(slotDuration, 'minutes') : null);
+                        if (slotEnd?.isValid() && now.isBetween(slotStart, slotEnd)) {
+                            diff = 0;
+                        }
+
+                        if (diff < closestDiff) {
+                            closestDiff = diff;
+                            closestEventKey = event.api_link;
+                        }
+                    }
+                }
+
+                const eventKey = closestEventKey;
                 handleEventChange(eventKey);
             }
         }));
