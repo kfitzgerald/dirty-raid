@@ -5,6 +5,8 @@ import Thunk from 'redux-thunk';
 import rootReducer from './reducers';
 import {initialSessionState} from "./session/SessionReducer";
 import {initialState as initialAppState} from './app/AppReducer';
+import {initialState as initialRaidpalState} from './raidpal/RaidPalReducer';
+import {initialState as initialCustomEventState} from './custom/CustomEventReducer';
 import {initialState as initialUserState} from './users/UserReducer';
 
 let composer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -19,6 +21,10 @@ let enhancers = composer(
                         preferences: {
                             ...state.app.preferences,
                         }
+                    },
+                    custom: {
+                        events: state.custom.events,
+                        selectedEventKey: state.custom.selectedEventKey,
                     },
                     session: {
                         token: {
@@ -52,6 +58,12 @@ let enhancers = composer(
                     token: {
                         ...persistedState.session.token,    // only persist the token, validation will be done on load
                     }
+                },
+
+                custom: {
+                    ...initialCustomEventState,
+                    events: persistedState.custom?.events || [],
+                    selectedEventKey: persistedState.custom?.selectedEventKey || null,
                 },
 
                 users: {

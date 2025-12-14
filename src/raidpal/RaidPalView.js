@@ -1,6 +1,6 @@
 import {Alert, Badge, Button, Container, Form, Nav, NavDropdown} from "react-bootstrap";
 import {useDispatch, useSelector} from "react-redux";
-import {useCallback, useEffect, useState} from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import {fetchRaidPalEvent, fetchRaidPalUser, fetchUserStreams, getSlug} from "./RaidPalActions";
 import './RaidPalView.scss';
 import Moment from "moment";
@@ -16,6 +16,7 @@ import StreamInfoModal from "../streams/StreamInfoModal";
 import {CondensedFormatter} from "../common/PrettyNumber";
 import RaidPalLogo from "../raidpal-logo.svg";
 import ErrorMessage from "../common/ErrorMessage";
+import {toLower, normalizeId, normalizeLogin} from "../common/Utils";
 import AddToCalendarButton from "./AddToCalendarButton";
 
 export const RAIDPAL_REFRESH_INTERVAL = 900000; // 15 min
@@ -56,7 +57,12 @@ export function getCondensedTimeTableByName(event) {
             // first slot - add as-is
             unique.push(slots[i]);
         } else {
-            if (slots[i-1].broadcaster_display_name.toLowerCase() === slots[i].broadcaster_display_name.toLowerCase()) {
+            const prev = slots[i-1];
+            const curr = slots[i];
+            const prevName = toLower(prev.broadcaster_display_name);
+            const currName = toLower(curr.broadcaster_display_name);
+            // Only merge adjacent slots if both are occupied and names match
+            if (prev.slot_occupied && curr.slot_occupied && prevName && currName && prevName === currName) {
                 // same streamer, update end time
                 unique[unique.length-1].endtime = endtime;
             } else {
@@ -84,7 +90,7 @@ export function getLineupUserIds(event, user_id) {
 export function getLineupUserLogins(event, user_login) {
     // unique ids of folks on the lineup excluding ourselves and empty slots
     const logins = new Set(event.time_table
-        .map(slot => slot.broadcaster_display_name.toLowerCase().trim())
+        .map(slot => slot ? toLower(slot.broadcaster_display_name).trim() : '')
         .filter(user_login => !!user_login)
     );
 
@@ -104,7 +110,7 @@ export default function RaidPalView() {
 
     const { showAmPm, showRaidPalCreatedEvents } = useSelector(state => state.app.preferences);
     const { isFetching, lastError, /*lastUpdated,*/ data, events, streams } = useSelector(state => state.raidpal);
-    const { user_id } = useSelector(state => state.session.data);
+    const { user_id, login: user_login } = useSelector(state => state.session.data);
     const userCache = useSelector(state => state.users.cache);
 
     const { /*isFetching: isEventFetching,*/ lastError: eventLastError, cache } = events;
@@ -112,6 +118,54 @@ export default function RaidPalView() {
 
     const now = Moment.utc();
     const selectedEvent = (selectedEventKey && cache[getSlug(selectedEventKey)]) || null;
+
+    const matchesUserSlot = useCallback((slot) => {
+        if (!slot) return false;
+        const slotIds = [
+            slot.broadcaster_id,
+        ].map(normalizeId);
+
+        const slotLogins = [
+            slot.broadcaster_login,
+            slot.broadcaster_display_name,
+        ].map(normalizeLogin);
+
+        return slotIds.some(id => id && id === normalizeId(user_id)) ||
+            slotLogins.some(login => login && login === normalizeLogin(user_login));
+    }, [normalizeId, normalizeLogin, user_id, user_login]);
+
+    const parseSlotStart = useCallback((slot) => {
+        const startRaw = slot?.starttime;
+        if (!startRaw) return null;
+        let m = Moment(startRaw);
+        if (!m.isValid()) m = Moment.utc(startRaw);
+        return m.isValid() ? m : null;
+    }, []);
+
+    const getClosestSlotDiff = useCallback((event) => {
+        if (!Array.isArray(event?.time_table)) return Number.MAX_SAFE_INTEGER;
+        let best = Number.MAX_SAFE_INTEGER;
+        for (let j = 0; j < event.time_table.length; j++) {
+            const slot = event.time_table[j];
+            if (!matchesUserSlot(slot)) continue;
+
+            const slotStart = parseSlotStart(slot);
+            if (!slotStart?.isValid()) continue;
+
+            let diff = Math.abs(slotStart.diff(now));
+
+            const slotDuration = Number.isFinite(event.slot_duration_mins) ? event.slot_duration_mins : null;
+            const slotEnd = slot.endtime ? Moment.utc(slot.endtime) : (slotDuration ? Moment(slotStart).add(slotDuration, 'minutes') : null);
+            if (slotEnd?.isValid() && now.isBetween(slotStart, slotEnd)) {
+                diff = 0;
+            }
+
+            if (diff < best) {
+                best = diff;
+            }
+        }
+        return best;
+    }, [matchesUserSlot, parseSlotStart, now]);
 
     const hasCreatedEvents = useCallback((data) => data?.events?.length > 0 || false, []);
 
@@ -154,14 +208,28 @@ export default function RaidPalView() {
             const raidpalData = getRaidPalData(data);
             // Preselect the best event
             if (raidpalData?.length) {
+                let closestEventKey = raidpalData[0].api_link;
+                let closestDiff = Number.MAX_SAFE_INTEGER;
 
-                // TODO: compare channel slot to now and choose the closest one, could be participating in multiple events
-                // let liveEvents = data.events_joined
-                //     .filter(e => now.isBetween(Moment.utc(e.starttime), Moment.utc(e.endtime)));
-                // const defaultEvent = liveEvents[0] || data.events_joined[0];
+                const fetchAndEvalEvents = async () => {
+                    for (let i = 0; i < raidpalData.length; i++) {
+                        const evt = await new Promise(resolve => {
+                            dispatch(fetchRaidPalEvent(raidpalData[i].api_link, (fetchErr, event) => resolve(event || null)));
+                        });
+                        if (!evt) continue;
+                        const diff = getClosestSlotDiff(evt);
+                        if (diff < closestDiff) {
+                            closestDiff = diff;
+                            closestEventKey = raidpalData[i].api_link;
+                        }
+                    }
 
-                const eventKey = raidpalData[0].api_link;
-                handleEventChange(eventKey);
+                    handleEventChange(closestEventKey);
+                };
+
+                fetchAndEvalEvents().catch(() => {
+                    handleEventChange(closestEventKey);
+                });
             }
         }));
 
@@ -219,6 +287,16 @@ export default function RaidPalView() {
     }, [dispatch]);
 
     const raidpalData = getRaidPalData(data);
+    const raidpalDataOrdered = useMemo(() => {
+        return (raidpalData || []).slice().sort((a, b) => {
+            const eventA = cache[getSlug(a.api_link)] || a;
+            const eventB = cache[getSlug(b.api_link)] || b;
+            const diffA = getClosestSlotDiff(eventA);
+            const diffB = getClosestSlotDiff(eventB);
+            if (diffA !== diffB) return diffA - diffB;
+            return new Date(a.starttime) - new Date(b.starttime);
+        });
+    }, [raidpalData, cache, getClosestSlotDiff]);
 
     return (
         <Container>
@@ -240,8 +318,8 @@ export default function RaidPalView() {
                     {!raidpalData?.length ? (
                         <Nav.Item className="static"><Alert variant="warning" className="mt-3">You don't have any upcoming events :(</Alert></Nav.Item>
                     ) : (
-                        <NavDropdown placement="bottom" menuVariant="dark" title={<span>{selectedEvent?.title || (selectedEventKey && raidpalData.find(e => e.api_link === selectedEventKey))?.title || 'Select RaidPal event...'}</span>}>
-                            {raidpalData.map((event, i) => {
+                        <NavDropdown placement="bottom" menuVariant="dark" title={<span>{selectedEvent?.title || (selectedEventKey && raidpalDataOrdered.find(e => e.api_link === selectedEventKey))?.title || 'Select RaidPal event...'}</span>}>
+                            {raidpalDataOrdered.map((event, i) => {
                                 const isLive = now.isBetween(Moment.utc(event.starttime), Moment.utc(event.endtime));
                                 return (
                                     <NavDropdown.Item key={i} eventKey={event.api_link}>

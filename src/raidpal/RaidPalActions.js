@@ -91,6 +91,22 @@ export function getSlug(event_uri) {
     return parts[parts.length-1];
 }
 
+//region Custom Events (shared helpers + actions)
+
+export function getCustomEventKey(data) {
+    const e = data?.event || data;
+    if (!e) return null;
+    if (e.raidpal_link) return `rp:${getSlug(e.raidpal_link)}`;
+    const title = (e.title || '').toString().trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    const start = (e.starttime || '').toString().trim();
+    return `ce:${title}-${start}`;
+}
+
+export const ADD_CUSTOM_EVENT = 'ADD_CUSTOM_EVENT';
+export const REMOVE_CUSTOM_EVENT = 'REMOVE_CUSTOM_EVENT';
+export const SELECT_CUSTOM_EVENT = 'SELECT_CUSTOM_EVENT';
+export const CLEAR_ALL_CUSTOM_EVENTS = 'CLEAR_ALL_CUSTOM_EVENTS';
+
 export function fetchRaidPalEvent(event_uri, callback=()=>{}) {
     return async (dispatch, getState) => {
         const { raidpal, session } = getState();
@@ -225,9 +241,41 @@ export function setCustomEventData(data) {
     return {
         type: SET_CUSTOM_EVENT_DATA,
         lastUpdated: Date.now(),
+        key: getCustomEventKey(data),
         data
     };
 }
+
+export function addCustomEvent(data) {
+    return {
+        type: ADD_CUSTOM_EVENT,
+        lastUpdated: Date.now(),
+        key: getCustomEventKey(data),
+        data
+    };
+}
+
+export function removeCustomEvent(key) {
+    return {
+        type: REMOVE_CUSTOM_EVENT,
+        key
+    };
+}
+
+export function selectCustomEvent(key) {
+    return {
+        type: SELECT_CUSTOM_EVENT,
+        key
+    };
+}
+
+export function clearAllCustomEvents() {
+    return {
+        type: CLEAR_ALL_CUSTOM_EVENTS
+    };
+}
+
+//endregion
 
 
 //endregion

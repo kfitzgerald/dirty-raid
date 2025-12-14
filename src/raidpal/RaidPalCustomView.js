@@ -1,4 +1,4 @@
-import {Alert, Badge, Button, Container, Form} from "react-bootstrap";
+import {Alert, Badge, Button, Container, Form, Nav, NavDropdown} from "react-bootstrap";
 import {useDispatch, useSelector} from "react-redux";
 import {useCallback, useEffect, useState} from "react";
 import {
@@ -15,6 +15,8 @@ import StreamInfoModal from "../streams/StreamInfoModal";
 import {CondensedFormatter} from "../common/PrettyNumber";
 import ErrorMessage from "../common/ErrorMessage";
 import {getCondensedTimeTableByName, getLineupUserLogins} from "./RaidPalView";
+import {removeCustomEvent, selectCustomEvent} from "./RaidPalActions";
+import {toLower} from "../common/Utils";
 
 export default function RaidPalCustomView() {
     const dispatch = useDispatch();
@@ -24,14 +26,24 @@ export default function RaidPalCustomView() {
     const [selectedStreamUserLogin, setSelectedStreamUserLogin] = useState(null);
 
     const { showAmPm } = useSelector(state => state.app.preferences);
-    const { lastError, customEventStreams: streams, customEvent } = useSelector(state => state.raidpal);
+    const { lastError, customEventStreams: streams, events: customEvents, selectedEventKey } = useSelector(state => state.custom);
     const { login } = useSelector(state => state.session.data);
     const userCache = useSelector(state => state.users.cache);
 
     const { isFetching: isStreamStatusFetching, lastError: streamLastError, lastUpdated: streamsLastUpdated } = streams;
 
     const now = Moment.utc();
-    const selectedEvent = customEvent?.event || null;
+    const selectedEvent = (customEvents.find(e => e.key === selectedEventKey)?.data?.event) || null;
+
+    const handleEventChange = useCallback((eventKey) => {
+        dispatch(selectCustomEvent(eventKey));
+    }, [dispatch]);
+
+    const handleRemoveEvent = useCallback((e, key) => {
+        e && e.preventDefault();
+        e && e.stopPropagation();
+        dispatch(removeCustomEvent(key));
+    }, [dispatch]);
 
     const handleRefresh = useCallback(() => {
         if (selectedEvent) {
@@ -71,6 +83,8 @@ export default function RaidPalCustomView() {
         dispatch(setPreference('showAmPm', e.target.checked));
     }, [dispatch]);
 
+    
+
     return (
         <Container>
             {lastError && (
@@ -78,9 +92,29 @@ export default function RaidPalCustomView() {
                     <ErrorMessage error={lastError} />
                 </Alert>
             )}
-            <div className="display-opts">
-                <label>Custom Event</label>
+            <div className="display-opts fle">
+                <div className="opt-labels">
+                    <label>Custom Events</label>
+                </div>
             </div>
+            <Nav activeKey={selectedEventKey} className="flex-column event-list mb-3" onSelect={handleEventChange}>
+                {!customEvents?.length ? (
+                    <Nav.Item className="static"><Alert variant="warning" className="mt-3">No custom events loaded</Alert></Nav.Item>
+                ) : (
+                    <NavDropdown placement="bottom" menuVariant="dark" title={<span>{selectedEvent?.title || (selectedEventKey && customEvents.find(e => e.key === selectedEventKey)?.data?.event?.title) || 'Select custom event...'}</span>}>
+                        {customEvents.map(({ key, data }, i) => {
+                            return (
+                                <NavDropdown.Item key={key} eventKey={key}>
+                                    <span className="title">{data.event.title}</span>
+                                    <Button size="sm" variant="link" className="p-0 ms-2 text-danger float-end" title="Remove" onClick={(e) => handleRemoveEvent(e, key)}>
+                                        <i className="bi bi-x-circle"/>
+                                    </Button>
+                                </NavDropdown.Item>
+                            );
+                        })}
+                    </NavDropdown>
+                )}
+            </Nav>
 
             {streamLastError && (
                 <Alert variant="danger" className="mt-3">
@@ -109,7 +143,7 @@ export default function RaidPalCustomView() {
                     </div>
                     <div className="lineup">
                         {getCondensedTimeTableByName(selectedEvent).map((slot, i) => {
-                            const slotLoginName = slot.broadcaster_display_name.toLowerCase();
+                            const slotLoginName = toLower(slot.broadcaster_display_name);
                             const isCurrent = now.isBetween(Moment.utc(slot.starttime), Moment.utc(slot.endtime));
                             const currentLiveStream = streams.data && streams.data.find(stream => stream.user_login === slotLoginName);
                             const profile = Object.values(userCache).find(u => u.login === slotLoginName);
@@ -122,7 +156,7 @@ export default function RaidPalCustomView() {
                             }*/
 
                             return (
-                                <div className={"slot" + (isCurrent ? ' current' : '')} key={i} data-id={currentLiveStream?.id} data-user-login={slot.broadcaster_display_name.toLowerCase()} onClick={handleStreamClick}>
+                                <div className={"slot" + (isCurrent ? ' current' : '')} key={i} data-id={currentLiveStream?.id} data-user-login={slotLoginName} onClick={handleStreamClick}>
                                     <div className="profile-container">
                                         <img src={profile?.profile_image_url || profileImage} alt="" />
                                     </div>
@@ -132,7 +166,7 @@ export default function RaidPalCustomView() {
                                             {slot.slot_occupied ? slot.broadcaster_display_name : <em>slot not occupied</em>}
                                         </div>
                                         <div className="timing">
-                                            <span>{Moment(slot.starttime).format(showAmPm ? 'MMM Do, h:mma' : 'MMM Do, HH:mm')}</span>{' – '}
+                                            <span>{Moment(slot.starttime).format(showAmPm ? 'ddd MMM Do, h:mma' : 'ddd MMM Do, HH:mm')}</span>{' – '}
                                             <span>{Moment(slot.endtime).format(showAmPm ? 'h:mma' : 'HH:mm')}</span>
                                         </div>
                                     </div>
