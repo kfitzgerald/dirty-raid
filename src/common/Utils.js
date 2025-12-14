@@ -12,3 +12,11 @@ export function sliceIntoChunks(arr, chunkSize) {
 export function toLower(value) {
     return (typeof value === 'string') ? value.toLowerCase() : '';
 }
+
+export function normalizeId(value) {
+    return (value === undefined || value === null) ? null : String(value);
+}
+
+export function normalizeLogin(value) {
+    return toLower(value).trim();
+}
