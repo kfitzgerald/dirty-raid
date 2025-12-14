@@ -166,7 +166,7 @@ export default function RaidPalCustomView() {
                                             {slot.slot_occupied ? slot.broadcaster_display_name : <em>slot not occupied</em>}
                                         </div>
                                         <div className="timing">
-                                            <span>{Moment(slot.starttime).format(showAmPm ? 'MMM Do, h:mma' : 'MMM Do, HH:mm')}</span>{' – '}
+                                            <span>{Moment(slot.starttime).format(showAmPm ? 'ddd MMM Do, h:mma' : 'ddd MMM Do, HH:mm')}</span>{' – '}
                                             <span>{Moment(slot.endtime).format(showAmPm ? 'h:mma' : 'HH:mm')}</span>
                                         </div>
                                     </div>
