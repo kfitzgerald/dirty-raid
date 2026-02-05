@@ -2,7 +2,7 @@ import {useSelector} from "react-redux";
 import {Badge} from "react-bootstrap";
 
 export default function NotFollowingBadgeOfShame({ broadcaster_id }) {
-    const { cache } = useSelector(state => state.followers);
+    const cache = useSelector(state => state.followers.cache);
 
     // Don't auto fetch rn - done when RP lineup is fetched
     // const dispatch = useDispatch();

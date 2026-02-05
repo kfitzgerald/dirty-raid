@@ -1,22 +1,21 @@
-import {useEffect, useState} from "react";
+import {useEffect, useRef} from "react";
 
 export function Countdown({ to }) {
-    // Could do pure-dom hacks, but let's keep it stateful
-    const [tick, setTick] = useState(0);
+    const spanRef = useRef()
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setTick(tick + 1);
+            if(spanRef.current) spanRef.current.innerHTML = Math.max(0, Math.round((to - Date.now()) / 1000));
         }, 1000);
 
         return () => {
             clearInterval(interval);
         };
-    }, [tick]);
+    }, [to, spanRef]);
 
     const diff = Math.max(0, Math.round((to - Date.now()) / 1000));
 
     return (
-        <>{diff}</>
+        <span ref={spanRef}>{diff}</span>
     );
 }

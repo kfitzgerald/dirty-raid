@@ -102,13 +102,19 @@ export default function RaidPalView() {
     const [selectedStreamUserId, setSelectedStreamUserId] = useState(null);
     const [ selectedEventKey, setSelectedEventKey ] = useState(null);
 
-    const { showAmPm, showRaidPalCreatedEvents } = useSelector(state => state.app.preferences);
-    const { isFetching, lastError, /*lastUpdated,*/ data, events, streams } = useSelector(state => state.raidpal);
+    const showAmPm = useSelector(state => state.app.preferences.showAmPm);
+    const showRaidPalCreatedEvents = useSelector(state => state.app.preferences.showRaidPalCreatedEvents);
+    const isFetching = useSelector(state => state.raidpal.isFetching);
+    const lastError = useSelector(state => state.raidpal.lastError);
+    const data = useSelector(state => state.raidpal.data);
+    const eventLastError = useSelector(state => state.raidpal.events.lastError);
+    const cache = useSelector(state => state.raidpal.events.cache);
+    const isStreamStatusFetching = useSelector(state => state.raidpal.streams.isFetching);
+    const streamLastError = useSelector(state => state.raidpal.streams.lastError);
+    const streamsLastUpdated = useSelector(state => state.raidpal.streams.lastUpdated);
+    const streamsData = useSelector(state => state.raidpal.streams.data);
     const { user_id } = useSelector(state => state.session.data);
     const userCache = useSelector(state => state.users.cache);
-
-    const { /*isFetching: isEventFetching,*/ lastError: eventLastError, cache } = events;
-    const { isFetching: isStreamStatusFetching, lastError: streamLastError, lastUpdated: streamsLastUpdated } = streams;
 
     const now = Moment.utc();
     const selectedEvent = (selectedEventKey && cache[getSlug(selectedEventKey)]) || null;
@@ -207,8 +213,8 @@ export default function RaidPalView() {
         };
     }, [dispatch, handleRefresh]);
 
-    const selectedStream = (selectedStreamId && streams.data?.find(stream => stream.id === selectedStreamId)) ||
-        (selectedStreamUserId && streams.data?.find(stream => stream.user_id === selectedStreamUserId)) || null;
+    const selectedStream = (selectedStreamId && streamsData?.find(stream => stream.id === selectedStreamId)) ||
+        (selectedStreamUserId && streamsData?.find(stream => stream.user_id === selectedStreamUserId)) || null;
 
     const handleToggleAmPm = useCallback((e) => {
         dispatch(setPreference('showAmPm', e.target.checked));
@@ -241,10 +247,10 @@ export default function RaidPalView() {
                         <Nav.Item className="static"><Alert variant="warning" className="mt-3">You don't have any upcoming events :(</Alert></Nav.Item>
                     ) : (
                         <NavDropdown placement="bottom" menuVariant="dark" title={<span>{selectedEvent?.title || (selectedEventKey && raidpalData.find(e => e.api_link === selectedEventKey))?.title || 'Select RaidPal event...'}</span>}>
-                            {raidpalData.map((event, i) => {
+                            {raidpalData.map((event) => {
                                 const isLive = now.isBetween(Moment.utc(event.starttime), Moment.utc(event.endtime));
                                 return (
-                                    <NavDropdown.Item key={i} eventKey={event.api_link}>
+                                    <NavDropdown.Item key={event.api_link} eventKey={event.api_link}>
                                         <span className="title">{event.title}</span>
                                         {isLive && <Badge bg="danger">Live</Badge>}
                                     </NavDropdown.Item>
@@ -290,7 +296,7 @@ export default function RaidPalView() {
                     <div className="lineup">
                         {getCondensedTimeTable(selectedEvent).map((slot, i) => {
                             const isCurrent = now.isBetween(Moment.utc(slot.starttime), Moment.utc(slot.endtime));
-                            const currentLiveStream = streams.data && streams.data.find(stream => stream.user_id === slot.broadcaster_id);
+                            const currentLiveStream = streamsData?.find(stream => stream.user_id === slot.broadcaster_id);
                             const profile = userCache[slot.broadcaster_id];
 
                             let userBadge = null;

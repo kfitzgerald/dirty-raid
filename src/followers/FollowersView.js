@@ -8,8 +8,10 @@ import ErrorMessage from "../common/ErrorMessage";
 export default function FollowersView() {
     const dispatch = useDispatch();
 
-    const streams = useSelector(state => state.streams);
-    const { isFetching, lastError, data, lastUpdated } = streams;
+    const isFetching = useSelector(state => state.streams.isFetching);
+    const lastError = useSelector(state => state.streams.lastError);
+    const data = useSelector(state => state.streams.data);
+    const lastUpdated = useSelector(state => state.streams.lastUpdated);
 
     const handleRefresh = useCallback(() => {
         dispatch(fetchFollowedStreams());

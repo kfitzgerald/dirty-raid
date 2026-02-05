@@ -20,7 +20,9 @@ function ReUsableStreamList({streams, lastUpdated, isFetching, handleRefresh}) {
     const [selectedStreamUserId, setSelectedStreamUserId] = useState(null);
     const [showModal, setShowModal] = useState(null);
 
-    const {showTitles, showTags, showProfileImg} = useSelector(state => state.app.preferences);
+    const showTitles = useSelector(state => state.app.preferences.showTitles);
+    const showTags = useSelector(state => state.app.preferences.showTags);
+    const showProfileImg = useSelector(state => state.app.preferences.showProfileImg);
     const userCache = useSelector(state => state.users.cache);
 
     const handleSort = useCallback((by, dir) => {
@@ -131,10 +133,10 @@ function ReUsableStreamList({streams, lastUpdated, isFetching, handleRefresh}) {
         </div>
         <div className="stream-list">
             {
-                Boolean(streams?.length) && streamList.map((stream, i) => {
+                Boolean(streams?.length) && streamList.map((stream) => {
                     const profile = userCache[stream.user_id];
                     return (
-                        <div className="stream" key={i} data-id={stream.id} data-user-id={stream.user_id} onClick={handleStreamClick}>
+                        <div className="stream" key={stream.id} data-id={stream.id} data-user-id={stream.user_id} onClick={handleStreamClick}>
                             <div className="info-container">
                                 {showProfileImg && (
                                     <div className="profile-container">
@@ -167,8 +169,8 @@ function ReUsableStreamList({streams, lastUpdated, isFetching, handleRefresh}) {
                                     <Col className="tags">
                                         <Badge bg="game">{stream.game_name}</Badge>
                                         {stream.is_mature && <Badge bg="warning">Mature</Badge>}
-                                        {(stream.tags||[]).sort((a, b) => a.localeCompare(b)).map((tag, i) => (
-                                            <Badge bg="tag" key={i}>{tag}</Badge>
+                                        {(stream.tags||[]).sort((a, b) => a.localeCompare(b)).map((tag) => (
+                                            <Badge bg="tag" key={tag}>{tag}</Badge>
                                         ))}
                                     </Col>
                                 </Row>

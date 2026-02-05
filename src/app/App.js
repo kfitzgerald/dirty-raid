@@ -17,9 +17,9 @@ function cleanURL() {
 function App() {
 
     const dispatch = useDispatch();
-    const session = useSelector(state => state.session);
-
-    const { lastError, token, data } = session;
+    const lastError = useSelector(state => state.session.lastError);
+    const token = useSelector(state => state.session.token);
+    const data = useSelector(state => state.session.data);
 
     // Check for oauth return params on load
     useEffect(() => {

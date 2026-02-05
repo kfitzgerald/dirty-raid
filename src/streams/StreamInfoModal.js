@@ -15,12 +15,13 @@ import CopyButton from "../common/CopyButton";
 export default function StreamInfoModal({ selectedStream, selectedUserId, lastUpdated, showModal, handleCloseModal }) {
     const dispatch = useDispatch();
 
-    const {raidChatMessageEnabled, raidChatMessage, raidChatMessageSendAsAnnouncement} = useSelector(state => state.app.preferences);
+    const raidChatMessageEnabled = useSelector(state => state.app.preferences.raidChatMessageEnabled);
+    const raidChatMessage = useSelector(state => state.app.preferences.raidChatMessage);
+    const raidChatMessageSendAsAnnouncement = useSelector(state => state.app.preferences.raidChatMessageSendAsAnnouncement);
     const userCache = useSelector(state => state.users.cache);
     const { user_id } = useSelector(state => state.session.data);
-    const streams = useSelector(state => state.streams);
-    const { raid } = streams;
-    const { isFetching: isRaidFetching, /*isCancelled, lastError: raidLastError,*/ lastUpdated: raidStartedAt } = raid;
+    const isRaidFetching = useSelector(state => state.streams.raid.isFetching);
+    const raidStartedAt = useSelector(state => state.streams.raid.lastUpdated);
 
     const handleRaidStart = useCallback(() => {
         // Only send if enabled and the user provided a message
@@ -109,8 +110,8 @@ export default function StreamInfoModal({ selectedStream, selectedUserId, lastUp
                             <Col className="tags">
                                 <Badge bg="game">{selectedStream.game_name}</Badge>
                                 {selectedStream.is_mature && <Badge bg="warning">Mature</Badge>}
-                                {(selectedStream.tags||[]).sort((a, b) => a.localeCompare(b)).map((tag, i) => (
-                                    <Badge bg="tag" key={i}>{tag}</Badge>
+                                {(selectedStream.tags||[]).sort((a, b) => a.localeCompare(b)).map((tag) => (
+                                    <Badge bg="tag" key={tag}>{tag}</Badge>
                                 ))}
                             </Col>
                         </Row>

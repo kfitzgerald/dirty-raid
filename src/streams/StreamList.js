@@ -25,10 +25,12 @@ export const REFRESH_INTERVAL = 15000;
 function StreamList() {
     const dispatch = useDispatch();
 
-    const { user_id, login } = useSelector(state => state.session.data);
+    const user_id = useSelector(state => state.session.data.user_id);
+    const login = useSelector(state => state.session.data.login);
     const userCache = useSelector(state => state.users.cache);
-    const { isFetching: isTeamsFetching, data: teamsData } = useSelector(state => state.teams);
-    const { customEvent } = useSelector(state => state.raidpal);
+    const isTeamsFetching = useSelector(state => state.teams.isFetching);
+    const teamsData = useSelector(state => state.teams.data);
+    const customEvent = useSelector(state => state.raidpal.customEvent);
     const [ currentTab, setCurrentTab ] = useState('followed');
     const [ showCustomEventModal, setShowCustomEventModal ] = useState(false);
     const [ showQRCodeModal, setShowQRCodeModal ] = useState(false);
