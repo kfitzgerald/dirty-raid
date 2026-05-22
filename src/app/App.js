@@ -28,7 +28,9 @@ function App() {
         if (window.location.hash) {
             const hashParams = new URLSearchParams(window.location.hash.substring(1))
             const hashData = Object.fromEntries(hashParams.entries());
-            dispatch(setOAuthToken(hashData));
+            if (hashParams.has('access_token') && hashParams.has('scope') && hashParams.has('state') && hashParams.has('token_type')) {
+                dispatch(setOAuthToken(hashData));
+            }
             cleanURL();
         }
 
@@ -36,8 +38,10 @@ function App() {
         if (window.location.search) {
             const searchParams = new URLSearchParams(window.location.search.substring(1))
             const searchData = Object.fromEntries(searchParams.entries());
-            dispatch(receiveTokenValidateError(searchData));
-            cleanURL();
+            if (searchParams.has('error')) {
+                dispatch(receiveTokenValidateError(searchData));
+                cleanURL();
+            }
         }
 
     }, [dispatch]);
