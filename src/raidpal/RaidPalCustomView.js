@@ -25,12 +25,16 @@ export default function RaidPalCustomView() {
     const [selectedStreamId, setSelectedStream] = useState(null);
     const [selectedStreamUserLogin, setSelectedStreamUserLogin] = useState(null);
 
-    const { showAmPm } = useSelector(state => state.app.preferences);
-    const { lastError, customEventStreams: streams, events: customEvents, selectedEventKey } = useSelector(state => state.custom);
+    const showAmPm = useSelector(state => state.app.preferences.showAmPm);
+    const lastError = useSelector(state => state.custom.lastError);
+    const isStreamStatusFetching = useSelector(state => state.custom.customEventStreams.isFetching);
+    const streamLastError = useSelector(state => state.custom.customEventStreams.lastError);
+    const streamsLastUpdated = useSelector(state => state.custom.customEventStreams.lastUpdated);
+    const streamsData = useSelector(state => state.custom.customEventStreams.data);
+    const customEvents = useSelector(state => state.custom.events);
+    const selectedEventKey = useSelector(state => state.custom.selectedEventKey);
     const { login } = useSelector(state => state.session.data);
     const userCache = useSelector(state => state.users.cache);
-
-    const { isFetching: isStreamStatusFetching, lastError: streamLastError, lastUpdated: streamsLastUpdated } = streams;
 
     const now = Moment.utc();
     const selectedEvent = (customEvents.find(e => e.key === selectedEventKey)?.data?.event) || null;
@@ -76,8 +80,8 @@ export default function RaidPalCustomView() {
         };
     }, [dispatch, handleRefresh]);
 
-    const selectedStream = (selectedStreamId && streams.data?.find(stream => stream.id === selectedStreamId)) ||
-        (selectedStreamUserLogin && streams.data?.find(stream => stream.user_login === selectedStreamUserLogin)) || null;
+    const selectedStream = (selectedStreamId && streamsData?.find(stream => stream.id === selectedStreamId)) ||
+        (selectedStreamUserLogin && streamsData?.find(stream => stream.user_login === selectedStreamUserLogin)) || null;
 
     const handleToggleAmPm = useCallback((e) => {
         dispatch(setPreference('showAmPm', e.target.checked));
@@ -145,7 +149,7 @@ export default function RaidPalCustomView() {
                         {getCondensedTimeTableByName(selectedEvent).map((slot, i) => {
                             const slotLoginName = toLower(slot.broadcaster_display_name);
                             const isCurrent = now.isBetween(Moment.utc(slot.starttime), Moment.utc(slot.endtime));
-                            const currentLiveStream = streams.data && streams.data.find(stream => stream.user_login === slotLoginName);
+                            const currentLiveStream = streamsData?.find(stream => stream.user_login === slotLoginName);
                             const profile = Object.values(userCache).find(u => u.login === slotLoginName);
 
                             let userBadge = null;

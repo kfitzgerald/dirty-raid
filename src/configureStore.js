@@ -11,9 +11,11 @@ import {initialState as initialUserState} from './users/UserReducer';
 
 let composer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
+const profile = new URLSearchParams(window.location.search).get('profile') || 'dr';
+
 let enhancers = composer(
     persistState(['session'], {
-        key: 'dr_session',
+        key: `${profile}_session`,
         slicer: (/*paths*/) => {
             return (state) => {
                 return {

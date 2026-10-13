@@ -1,6 +1,6 @@
 {
   "name": "dirty-raid",
-  "version": "4.4.0",
+  "version": "4.5.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/kfitzgerald/dirty-raid"
@@ -8,7 +8,6 @@
   "author": "Kevin Fitzgerald",
   "license": "MIT",
   "dependencies": {
-    "@sentry/react": "^7.46.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -64,5 +63,8 @@
     "transformIgnorePatterns": [],
     "transform": {}
   },
-  "homepage": "https://raid.dirtybriefs.net"
+  "homepage": "https://raid.dirtybriefs.net",
+  "devDependencies": {
+    "@sentry/react": "^10.53.1"
+  }
 }

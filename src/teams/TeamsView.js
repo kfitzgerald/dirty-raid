@@ -26,8 +26,12 @@ function getTeamUserIds(team, user_id) {
 export default function TeamsView() {
     const dispatch = useDispatch();
     const [selectedTeamId, setSelectedTeamId] = useState(null);
-    const { isFetching: isTeamsFetching, lastError: teamsLastError, data: teamsData, streams: teamStreams } = useSelector(state => state.teams);
-    const { data:teamStreamData, isFetching: isStreamsFetching, lastUpdated: streamsLastUpdated } = teamStreams
+    const isTeamsFetching = useSelector(state => state.teams.isFetching);
+    const teamsLastError = useSelector(state => state.teams.lastError);
+    const teamsData = useSelector(state => state.teams.data);
+    const teamStreamData = useSelector(state => state.teams.streams.data);
+    const isStreamsFetching = useSelector(state => state.teams.streams.isFetching);
+    const streamsLastUpdated = useSelector(state => state.teams.streams.lastUpdated);
     const { user_id } = useSelector(state => state.session.data);
 
     const selectedTeam = (teamsData && selectedTeamId && teamsData.find(team => team.id === selectedTeamId)) || null;
@@ -113,9 +117,9 @@ export default function TeamsView() {
                         <Nav.Item className="static"><Alert variant="warning" className="mt-3">You do not appear to be a member of any teams :(</Alert></Nav.Item>
                     ) : (
                         <NavDropdown placement="bottom" menuVariant="dark" title={<span>{selectedTeam?.team_display_name || 'Select twitch team...'}</span>}>
-                            {teamsData.map((team, i) => {
+                            {teamsData.map((team) => {
                                 return (
-                                    <NavDropdown.Item key={i} eventKey={team.id}>
+                                    <NavDropdown.Item key={team.id} eventKey={team.id}>
                                         <span className="title">{team.team_display_name}</span>
                                     </NavDropdown.Item>
                                 );

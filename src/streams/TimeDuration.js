@@ -9,17 +9,17 @@ import Moment from "moment";
  */
 export function TimeDuration({time}) {
     // Could do pure-dom hacks, but let's keep it stateful
-    const [tick, setTick] = useState(0);
+    const [, setTick] = useState(0);
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setTick(tick + 1);
+            setTick((prev) => prev + 1);
         }, 15000);
 
         return () => {
             clearInterval(interval);
         };
-    }, [tick]);
+    }, []);
 
     const duration = Moment.utc(Moment().diff(Moment(time)));
 
