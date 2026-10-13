@@ -156,9 +156,10 @@ a {
   .nav-link {
     padding-top: 8px;
     padding-bottom: 8px;
+    border-bottom: 3px solid transparent; // prevent layout shift when active border is applied
 
     &.active {
-      border-bottom: 3px solid white;
+      border-bottom-color: white;
     }
     //padding: var(--bs-nav-link-padding-y)) calc(2*var(--bs-nav-link-padding-x));
   }
@@ -174,6 +175,48 @@ a {
       a {
         overflow: hidden;
         text-overflow: ellipsis;
+      }
+    }
+  }
+}
+
+// Responsive layout tweaks for the Custom Event modal manage list
+.custom-event-url {
+  .event-title {
+    min-width: 0; // allow ellipsis if needed
+  }
+
+  .event-actions {
+    width: 100%;
+  }
+
+  @media (min-width: 576px) {
+    .event-actions {
+      width: auto;
+      margin-left: .75rem;
+    }
+  }
+
+  // Overlay clear button on JSON textarea in Load tab
+  .json-textarea-wrapper {
+    position: relative;
+    margin-bottom: .5rem; // space for validation/error messages below
+
+    textarea.form-control {
+      padding-right: 2.25rem; // space for the clear button
+    }
+
+    .json-clear-btn {
+      position: absolute;
+      top: .35rem;
+      right: .35rem;
+      color: #bf94ff;
+      text-decoration: none;
+      padding: .25rem;
+
+      &:hover {
+        color: lighten(#bf94ff, 10%);
+        background: transparent;
       }
     }
   }

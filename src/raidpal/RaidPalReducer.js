@@ -36,17 +36,7 @@ export const initialState = {
         data: null
     },
 
-    // Custom raidpal format event
-    customEvent: null,
-
-    // Custom event streams
-    customEventStreams: {
-        isFetching: false,
-        lastError: null,
-        didInvalidate: false,
-        lastUpdated: null,
-        data: null
-    },
+    // Custom event state moved to custom/CustomEventReducer
 
 };
 
@@ -157,54 +147,9 @@ export default function RaidPalReducer(state = initialState, action) {
 
         //endregion
 
-        //region Custom Events
-
-        case SET_CUSTOM_EVENT_DATA:
-            return {
-                ...state,
-                customEvent: action.data
-            };
-
-        //endregion
-
-        //region Custom Streams
-
-        case REQUEST_CUSTOM_STREAMS:
-            return {
-                ...state,
-                customEventStreams: {
-                    ...state.customEventStreams,
-                    isFetching: true,
-                }
-            }
-
-        case RECEIVE_CUSTOM_STREAMS_SUCCESS:
-            return {
-                ...state,
-                customEventStreams: {
-                    ...state.customEventStreams,
-                    isFetching: false,
-                    lastError: null,
-                    didInvalidate: false,
-                    lastUpdated: action.lastUpdated,
-                    data: action.data
-                }
-            };
-
-        case RECEIVE_CUSTOM_STREAMS_ERROR:
-            return {
-                ...state,
-                customEventStreams: {
-                    ...state.customEventStreams,
-                    isFetching: false,
-                    lastError: action.error
-                }
-            };
-
-        //endregion
+        // Custom event handling removed (now in custom/CustomEventReducer)
 
         default:
             return state;
     }
 }
-
